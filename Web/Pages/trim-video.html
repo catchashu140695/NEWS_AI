@@ -1,0 +1,228 @@
+<style>
+    body {
+        background-color: #f5f5f5;
+    }
+
+    .container {
+        margin-top: 50px;
+    }
+
+    .video-container,
+    .segment-list,
+    #videoPlayerContainer {
+        margin-top: 20px;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .segment-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        background-color: grey;
+        margin: 5px 0;
+        border-radius: 5px;
+    }
+</style>
+
+
+<div id="loader" class="loader hidden"></div>
+<div class="container text-center" id="mainDiv">
+    <button id="uploadButton" class="btn btn-primary btn-lg"><i class="fas fa-upload"></i> Upload Video</button>
+
+    <div id="videoPlayerContainer" class="video-container hidden">
+        <h3>Selected Video</h3>
+        <video id="videoPlayer" width="80%" controls>
+            <source src="" type="video/mp4"> <!-- src will be updated dynamically -->
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <div class="video-container hidden" id="controlsContainer">
+        <div id="timelineSlider" style="margin: 20px 0;"></div>
+        <div class="btn-group mt-3">
+            <button class="btn btn-success" id="startSegmentButton"><i class="fas fa-play-circle"></i> Start</button>
+            <span id="startTimeDisplay"></span>
+            <button class="btn btn-success" id="endSegmentButton" disabled><i class="fas fa-stop-circle"></i>
+                End</button>
+            <span id="endTimeDisplay"></span>
+            <button class="btn btn-warning" id="exportSegmentsButton"><i class="fas fa-file-export"></i> Export
+                Segments</button>
+        </div>
+        <input type="hidden" id="hdnStart" value="">
+        <input type="hidden" id="hdnEnd" value="">
+    </div>
+
+    <div class="segment-list hidden" id="segmentListContainer">
+        <h5>Selected Segments:</h5>
+        <ul class="list-group" id="segmentList">
+            <!-- Dynamically generated segment items will appear here -->
+        </ul>
+    </div>
+</div>
+
+<input type="hidden" id="hdnVideoPath">
+
+
+
+<script>
+    let segments = [];
+    let videoDuration = 0;
+
+    // Initialize the single-handle slider
+    const slider = document.getElementById('timelineSlider');
+    noUiSlider.create(slider, {
+        start: [0], // Start with the beginning of the video
+        connect: [true, false],
+        range: {
+            'min': 0,
+            'max': 100 // This will be updated dynamically based on video duration
+        },
+        tooltips: true,
+        format: {
+            to: value => value.toFixed(2),
+            from: value => parseFloat(value)
+        }
+    });
+
+    // Function to format time in "minute:seconds"
+    function formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+
+    document.getElementById('uploadButton').addEventListener('click', () => {
+        eel.select_and_save_video()(videoPath => {
+            if (videoPath) {
+                const videoPlayer = document.getElementById('videoPlayer');
+                videoPlayer.src = videoPath.replace("Web/", "");
+                $('#hdnVideoPath').val(videoPath);
+                document.getElementById('videoPlayerContainer').classList.remove('hidden');
+                document.getElementById('controlsContainer').classList.remove('hidden');
+                document.getElementById('segmentListContainer').classList.remove('hidden');
+
+                videoPlayer.onloadedmetadata = () => {
+                    videoDuration = videoPlayer.duration;
+                    slider.noUiSlider.updateOptions({
+                        range: {
+                            'min': 0,
+                            'max': videoDuration
+                        },
+                        start: [0] // Set initial start based on duration
+                    });
+                };
+            }
+        });
+    });
+
+    // Update video frame on slider change
+    slider.noUiSlider.on('update', (values) => {
+        const currentTime = parseFloat(values[0]);
+        const videoPlayer = document.getElementById('videoPlayer');
+        videoPlayer.currentTime = currentTime;
+    });
+
+    // Handle the slider handle click
+    slider.noUiSlider.on('set', () => {
+        // Do not set hdnStart on slider set
+    });
+
+    // Handle start button click
+    document.getElementById('startSegmentButton').addEventListener('click', () => {
+        const videoPlayer = document.getElementById('videoPlayer');
+        const startTime = videoPlayer.currentTime;
+
+        document.getElementById('hdnStart').value = startTime;
+        document.getElementById('startTimeDisplay').textContent = `Start Time: ${formatTime(startTime)}`;
+
+        // Enable end button
+        document.getElementById('endSegmentButton').disabled = false;
+    });
+
+    // Handle end button click
+    document.getElementById('endSegmentButton').addEventListener('click', () => {
+        const videoPlayer = document.getElementById('videoPlayer');
+        const endTime = videoPlayer.currentTime;
+
+        document.getElementById('hdnEnd').value = endTime;
+        document.getElementById('endTimeDisplay').textContent = `End Time: ${formatTime(endTime)}`;
+
+        const hdnStartValue = parseFloat(document.getElementById('hdnStart').value);
+
+        if (!isNaN(hdnStartValue)) {
+            const segment = { start: hdnStartValue, end: endTime };
+            segments.push(segment);
+
+            const listItem = document.createElement('li');
+            listItem.classList.add('list-group-item', 'segment-item');
+            listItem.innerHTML =
+                `<span>Segment from ${formatTime(segment.start)} to ${formatTime(segment.end)}</span>
+                    <button class="btn btn-danger btn-sm delete-segment">Delete</button>`;
+            document.getElementById('segmentList').appendChild(listItem);
+
+            // Add event listener to delete segment button
+            listItem.querySelector('.delete-segment').addEventListener('click', () => {
+                segments = segments.filter(s => s.start !== segment.start || s.end !== segment.end);
+                listItem.remove();
+            });
+
+            // Clear time displays
+            document.getElementById('startTimeDisplay').textContent = '';
+            document.getElementById('endTimeDisplay').textContent = '';
+            document.getElementById('hdnStart').value = '';
+            document.getElementById('hdnEnd').value = '';
+
+            // Reset end button
+            document.getElementById('endSegmentButton').disabled = true;
+        }
+    });
+
+    document.getElementById('exportSegmentsButton').addEventListener('click', () => {
+        document.getElementById('loader').classList.remove('hidden');
+        const videoPath = $('#hdnVideoPath').val(); // Get the video path
+        if (segments.length === 0) {
+            alert("No segments to export.");
+            document.getElementById('loader').classList.add('hidden');
+            return;
+        }
+
+        eel.trim_video(videoPath, segments)(response => {
+            document.getElementById('loader').classList.add('hidden');
+            if (response.success) {
+                const downloadLinks = response.download_links; // Get the list of video paths
+                downloadLinks.forEach((path, index) => {
+                    // Create an anchor element for each download link
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = path.replace("web/", "");
+                    downloadLink.download = `trimmed_segment_${index}.mp4`;
+                    downloadLink.textContent = `Download Segment ${index + 1}`;
+
+                    // Append the anchor element to the document for display
+                    document.body.appendChild(downloadLink);
+
+                    // Automatically trigger the download
+                    downloadLink.click();
+
+                    // Remove the link element after the download
+                    document.body.removeChild(downloadLink);
+                });
+
+                Swal.fire({
+                    title: 'Hurray !!!',
+                    text: 'Segments generated succesfully',
+                    icon: 'success',
+                    showConfirmButton: true,
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    window.location.reload(); // Reload the page when the alert is closed
+                });
+            } else {
+                alert("Error trimming video: " + response.error);
+            }
+        });
+    });
+</script>

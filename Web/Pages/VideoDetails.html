@@ -1,0 +1,355 @@
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Add Video Details</h3>
+            </div>
+            <div class="col-md-6" style="text-align: right;">
+                <button id="btnStartProcess" onclick="StartProcess()" class="btn btn-success">Start Process</button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div id="videoGallery" class="row">
+
+        </div>
+    </div>
+    
+</div>
+
+
+<div class="modal fade" id="videoDetailsModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="videoDetailsLabel">Video Details</h5>
+                <button class="btn btn-info" id="btnGenerate" onclick="getTranscribe()">Generate</button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="txtTranscription">Transcription</label>
+                        <textarea class="form-control mb-2" cols="5" id="txtTranscription" placeholder="Transcription"
+                            style="height: 135px;"></textarea>
+                        <div class="d-flex">
+                            <button class="btn btn-primary w-100"
+                                onclick="playText($('#txtTranscription').val())">Play</button>&nbsp;
+
+                        </div>
+
+                    </div>
+                    <div class="col-md-4">
+                        <label for="txtFullStory">Full Story</label>
+                        <textarea class="form-control mb-2" style="height: 135px;" cols="6" id="txtFullStory"
+                            placeholder="Full Story" data-bs-toggle="tooltip"></textarea>
+                        <div class="d-flex">
+                            <button class="btn btn-primary w-100 mr-1"
+                                onclick="playText($('#txtFullStory').val())">Play</button>&nbsp;
+                            <button class="btn btn-warning w-100"
+                                onclick="changeFullStory($('#txtTranscription').val())">Refresh</button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="txtIntroduction">Introduction</label>
+                        <textarea class="form-control mb-2" cols="5" id="txtIntroduction" placeholder="Introduction"
+                            style="height: 135px" data-bs-toggle="tooltip"></textarea>
+                        <div class="d-flex">
+                            <button class="btn btn-primary w-100 mr-1"
+                                onclick="playText($('#txtIntroduction').val())">Play</button>&nbsp;
+                            <button class="btn btn-warning w-100"
+                                onclick="changeIntroduction($('#txtTranscription').val())">Refresh</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="txtHeadline">Headline</label>
+                        <textarea class="form-control mb-2" cols="5" style="height: 135px;" id="txtHeadline"
+                            placeholder="Headline" data-bs-toggle="tooltip"></textarea>
+                        <div class="d-flex">
+                            <button class="btn btn-primary w-100 mr-1"
+                                onclick="playText($('#txtHeadline').val())">Play</button>&nbsp;
+                            <button class="btn btn-warning w-100"
+                                onclick="changeHeadline($('#txtTranscription').val())">Refresh</button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="txtYTTitle">Youtube Title</label>
+                        <textarea class="form-control mb-2" cols="5" style="height: 135px;" id="txtYTTitle"
+                            placeholder="Youtube Title" data-bs-toggle="tooltip"></textarea>
+                        <div class="d-flex">
+                            <button class="btn btn-primary w-100 mr-1"
+                                onclick="playText($('#txtYTTitle').val())">Play</button>&nbsp;
+                            <button class="btn btn-warning w-100"
+                                onclick="changeYTTitle($('#txtTranscription').val())">Refresh</button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="txtYTDescription">Youtube Description</label>
+                        <textarea class="form-control mb-2" cols="5" style="height: 135px;" id="txtYTDescription"
+                            placeholder="Youtube Description" data-bs-toggle="tooltip"></textarea>
+                        <div class="d-flex">
+                            <button class="btn btn-primary w-100 mr-1"
+                                onclick="playText($('#txtYTDescription').val())">Play</button>&nbsp;
+                            <button class="btn btn-warning w-100"
+                                onclick="changeYTDescription($('#txtTranscription').val())">Refresh</button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="txtYTTags">Youtube Tags</label>
+                        <textarea class="form-control mb-2" cols="5" style="height: 135px;" id="txtYTTags"
+                            placeholder="Youtube Tags" data-bs-toggle="tooltip"></textarea>
+                        <div class="d-flex">
+                            <button class="btn btn-primary w-100 mr-1"
+                                onclick="playText($('#txtYTTags').val())">Play</button>&nbsp;
+                            <button class="btn btn-warning w-100"
+                                onclick="changeYTTags($('#txtTranscription').val())">Refresh</button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="txtInstaDescription">Instagram Description</label>
+                        <textarea class="form-control mb-2" cols="5" style="height: 135px;" id="txtInstaDescription"
+                            placeholder="Instagram Description" data-bs-toggle="tooltip"></textarea>
+                        <div class="d-flex">
+                            <button class="btn btn-primary w-100 mr-1"
+                                onclick="playText($('#txtInstaDescription').val())">Play</button>&nbsp;
+                            <button class="btn btn-warning w-100"
+                                onclick="changeInstaDescription($('#txtTranscription').val())">Refresh</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
+                <button type="button" class="btn btn-primary" onclick="saveDetails()" id="saveDetails">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="video_id" value="0" />
+
+<script>
+    $(document).ready(function () {
+        clearfields();
+
+        getAllVideos($('#hdnActiveProject').val());
+
+        $('#videoDetailsModal').on('hidden.bs.modal', function () {
+            $('video_id').val('0');
+            $('hdnEnglishTransalation').val('');
+        });
+
+        
+    });
+
+    function getAllVideos(ProjectId) {
+        $('#videoGallery').html('');
+        eel.list_videos(ProjectId)(function (combinedData) {
+            const [projectPath, videos] = combinedData.split('|');
+            const videoArray = (typeof videos === 'string') ? videos.split('~') : [];
+            const folderPath = projectPath.replace(/\\/g, '/');
+            const videoGallery = $('#videoGallery');
+
+            if (videoArray.length === 0) {
+                videoGallery.append('<p>No videos found.</p>');
+            } else {
+                videoArray.forEach((video, index) => {
+                    video = video.trim();
+
+                    if (video) {
+                        var a = "./" + folderPath.replace("Web/", "") + "/" + video;
+                        const videoElement = `
+                                <div class="col-md-4 mb-4">
+                                    <div class="video-library">
+                                        <div class="video-item">
+                                            <video width="100%" controls>
+                                                <source src="${a}" type="video/mp4">
+                                            </video>
+                                        </div>
+                                        <button class="btn btn-info btn-block mt-2 w-100" onclick="openVideoDetails('${video}')">Edit Details</button>
+                                    </div>
+                                </div>
+                            `;
+                        videoGallery.append(videoElement);
+                    }
+                });
+            }
+        });
+    }
+
+    function openVideoDetails(video) {
+        clearfields();
+        const videoId = video.split('.').slice(0, -1).join('.');
+        const project_id=$('#hdnActiveProject').val(); 
+        eel.fetch_video_details(videoId, project_id)(function(response) {
+            if (response) {                
+                $('#video_id').val(response.video_id);
+                $('#txtHeadline').val(response.headline);
+                $('#txtIntroduction').val(response.introduction);
+                $('#txtFullStory').val(response.full_story);
+                $('#txtYTTitle').val(response.yt_title);
+                $('#txtYTDescription').val(response.yt_description);
+                $('#txtYTTags').val(response.yt_tags);
+                $('#txtInstaDescription').val(response.insta_description);
+                $('#txtTranscription').val(response.transcription);
+            } else {
+                alert("No data found for this video.");
+            }
+        });
+        $('#video_id').val(videoId);        
+        $('#videoDetailsModal').modal('show');
+    }
+
+    function closeModal() {
+        clearfields();        
+        $('#videoDetailsModal').modal('hide');
+
+    }
+
+
+
+    function getTranscribe() {
+        $('#btnGenerate').text("Generating");
+        $('#btnGenerate').removeClass().addClass("btn btn-success");
+        eel.transcribe_video($('#hdnActiveProject').val(), $('#video_id').val())(function (response) {
+            $('#txtTranscription').val(response);                  
+            changeFullStory(response);
+            changeIntroduction(response);
+            changeHeadline(response);
+            changeYTTitle(response);
+            changeYTDescription(response);
+            changeYTTags(response);
+            changeInstaDescription(response);   
+            $('#btnGenerate').text("Generate");
+            $('#btnGenerate').removeClass().addClass("btn btn-primary");             
+        });
+        
+    }
+    function clearfields(){
+        $('video_id').val('0');
+        $('#txtTranscription').val('');
+        $('#txtFullStory').val('');
+        $('#txtIntroduction').val('');
+        $('#txtHeadline').val('');
+        $('#txtYTTitle').val('');
+        $('#txtYTDescription').val('');
+        $('#txtYTTags').val('');
+        $('#txtInstaDescription').val('');
+    }
+
+    
+
+    function changeFullStory(content) {
+        var a = 'Write the summary in hindi adding sentences which will increase audience retention for the content:' + content;
+        eel.get_chat_response(a)(function (response) {
+            $('#txtFullStory').val(response.replace('"', ''));
+        });
+    }
+
+    function changeIntroduction(content) {
+        var a = 'Write a introduction line in hindi for about 30 seconds adding catchy sentences which will increase audience retention forr the content:' + content;
+        eel.get_chat_response(a)(function (response) {
+            $('#txtIntroduction').val(response.replace('"', ''));
+        });
+    }
+
+    function changeHeadline(content) {
+        var a = 'write a headline in english for about 40 seconds for the content:' + content;
+        eel.get_chat_response(a)(function (response) {
+            $('#txtHeadline').val(response.replace('"', ''));
+        });
+    }
+
+    function changeYTTitle(content) {
+        var a = 'consider you are a youtuber. write a youtube title in about 100 characters in english for the content:' + content;
+        eel.get_chat_response(a)(function (response) {
+            $('#txtYTTitle').val(response.replace('"', ''));
+        });
+    }
+
+    function changeYTDescription(content) {
+        var a = 'translate to english for about 100 characters for the content:' + content;
+        eel.get_chat_response(a)(function (response) {
+            $('#txtYTDescription').val(response.replace('"', ''));
+        });
+    }
+
+    function changeYTTags(content) {
+        var a = 'consider you are a youtuber. write SEO youtube tags in english separated by comma for the content:' + content;
+        eel.get_chat_response(a)(function (response) {
+            $('#txtYTTags').val(response.replace('"', ''));
+        });
+    }
+    function changeInstaDescription(content) {
+        var a = 'consider you are a Reel maker.write a instagram description including  trending hashtags for the content:' + content;
+        eel.get_chat_response(a)(function (response) {
+            $('#txtInstaDescription').val(response.replace('"', ''));
+        });
+    }
+
+    $('#saveDetails').click(function () {
+        const videoDetails = {
+            video_id: $('#video_id').val(),
+            transcription: $('#transcription').val(),
+            
+        };        
+        closeModal();
+    });
+
+    function playText(text) {
+        if (text == "") {
+            alert("Nothing to play !!!");
+            return false;
+        }
+        eel.play_text(text)();
+    }
+
+    function saveDetails(){
+        const videoId = $('#video_id').val();
+        const transcription = $('#txtTranscription').val();
+        const headline = $('#txtHeadline').val();
+        const introduction = $('#txtIntroduction').val();
+        const fullStory = $('#txtFullStory').val();
+        const ytTitle = $('#txtYTTitle').val();
+        const ytDescription = $('#txtYTDescription').val();
+        const ytTags = $('#txtYTTags').val();
+        const instaDescription = $('#txtInstaDescription').val();
+    
+        
+    
+        const videoDetails = {
+            project_id: $('#hdnActiveProject').val(),
+            video_id: videoId,
+            transcription: transcription,
+            headline: headline,
+            introduction: introduction,
+            full_story: fullStory,
+            yt_title: ytTitle,
+            yt_description: ytDescription,
+            yt_tags: ytTags,
+            insta_description: instaDescription,
+            status: 0  // Assuming status is 1 when all fields are filled
+        };   
+          
+        eel.save_video_details(videoDetails)(function (response) {
+            if (response === 'success') {
+                clearfields();
+                alert('Video details saved successfully!');
+                
+            } else {
+                alert('Error saving video details. Please try again.');
+            }
+        });
+    }
+
+
+    function StartProcess(){        
+        const project_id=$('#hdnActiveProject').val();
+        eel.start_long_video_process(project_id);
+        alert("Process Started !!!")
+    }
+    
+
+
+</script>

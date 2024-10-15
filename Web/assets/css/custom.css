@@ -1,0 +1,33 @@
+.content-wrapper {
+    background: #000000;
+    padding: 0.875rem 0.75rem;
+    width: 100%;
+    -webkit-flex-grow: 1;
+    flex-grow: 1;
+}
+/* The entire scrollbar */
+::-webkit-scrollbar {
+    width: 12px; /* Width of the scrollbar */
+  }
+  
+  /* The track (background) */
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+  }
+  
+  /* The handle (scrollbar itself) */
+  ::-webkit-scrollbar-thumb {
+    background: #888; 
+    border-radius: 6px; /* Rounded scrollbar handle */
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+  }
+  
+  /* Optional: Style the corner between vertical and horizontal scrollbars */
+  ::-webkit-scrollbar-corner {
+    background: #f1f1f1;
+  }
+  

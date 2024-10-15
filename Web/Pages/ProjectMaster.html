@@ -1,0 +1,313 @@
+<style>
+    .video-library {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        margin: 20px 0;
+    }
+
+    .video-item {
+        background: #fff;
+        padding: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .video-item video {
+        width: 100%;
+        height: auto;
+    }
+
+    .loader-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        /* Semi-transparent background */
+        display: none;
+        /* Hidden by default */
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        /* Make sure it’s on top of other content */
+    }
+
+    .loader {
+        border: 16px solid #f3f3f3;
+        /* Light grey */
+        border-top: 16px solid #3498db;
+        /* Blue */
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+<div class="loader-overlay" id="loader">
+    <div class="loader"></div>
+</div>
+<div class="card" id="content">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Add Projects</h3>
+            </div>
+            <div class="col-md-6" style="text-align: right;">
+                <span>All the <span class="text-danger">*</span> marked fields are mandatory.</span>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="card-body">
+        <form id="projectForm">
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="project_name">Project Name(<span class="text-danger">*</span>):</label>
+                    <input type="text" id="project_name" class="form-control" required>
+                    <span id="name_error" class="text-danger"></span>
+                </div>
+                <div class="col-md-4">
+                    <label for="description">Description:</label>
+                    <input type="text" id="description" class="form-control">
+                    <span id="description_error" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4 mt-4">
+                    <button type="button" class="btn btn-success" onclick="addProject()">Add Project</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- View Projects Table -->
+<div class="card mt-2">
+    <div class="card-header">
+        <h3>View Projects</h3>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table border="1" class="table table-bordered" id="projectsTable">
+                <tr>
+                    <th>ID</th>
+                    <th>Project Name</th>
+                    <th>Description</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+                <tr id="tblData">
+                    <td colspan="6" class="text-center">No Record Found !!!</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="AddModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload Videos</h5>
+                <button type="button" onclick="getPathToFiles()">Add</button>
+            </div>
+            <div class="modal-body">
+                <div id="videoList" class="row" style="max-height:300px;overflow-y:scroll;">
+                    <!-- Videos will be displayed here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="redirectToVideoDetails()">Proceed</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+    // Initialize Flatpickr
+    flatpickr('.date-picker', {
+        dateFormat: 'Y-m-d',
+        allowInput: true,
+    });
+
+    // Validation logic and project addition logic
+    function validateProjectForm() {
+        let isValid = true;
+
+        // Validate Project Name
+        let projectName = document.getElementById('project_name').value;
+        let nameError = document.getElementById('name_error');
+        if (projectName === '') {
+            nameError.innerText = 'Project name is required';
+            isValid = false;
+        } else {
+            nameError.innerText = '';
+        }
+
+        // Validate Description (optional)
+        let description = document.getElementById('description').value;
+        let descriptionError = document.getElementById('description_error');
+        if (description.length > 255) {
+            descriptionError.innerText = 'Description should be less than 255 characters';
+            isValid = false;
+        } else {
+            descriptionError.innerText = '';
+        }
+        return isValid;
+    }
+
+    // Updated addProject function with validation
+    function addProject() {
+        if (!validateProjectForm()) {
+            return;
+        }
+
+        let project_name = document.getElementById('project_name').value;
+        let description = document.getElementById('description').value;
+
+        eel.add_project(project_name, description)(function () {
+            $('#project_name').val('');
+            $('#description').val('');
+            fetchProjects();
+        });
+    }
+
+    // Fetch and display projects
+    function fetchProjects() {
+        eel.get_projects()(function (projects) {
+            let table = document.getElementById('projectsTable');
+            table.innerHTML = `<tr>
+                <th>#</th>
+                <th>Project Name</th>
+                <th>Description</th>
+                <th>Created</th>                
+                <th>Actions</th>
+            </tr>`;
+
+            // Check if the project list is empty
+            if (projects.length === 0) {
+                let row = table.insertRow();
+                let cell = row.insertCell(0);
+                cell.colSpan = 5;  // Make the cell span across all columns
+                cell.innerHTML = 'No records found';  // Display the message
+                cell.style.textAlign = 'center';  // Center the text
+            } else {
+                // If projects exist, loop through and insert rows as normal
+                projects.forEach(function (project, index) {
+                    let row = table.insertRow();
+                    row.insertCell(0).innerHTML = index + 1;  // Row number
+                    row.insertCell(1).innerHTML = project.project_name;
+                    row.insertCell(2).innerHTML = project.description;
+                    row.insertCell(3).innerHTML = project.created_on;
+                    row.insertCell(4).innerHTML = `
+                        <button class="btn btn-warning" onclick="AddVideos(${project.id})">Add Videos</button>
+                        <button class="btn btn-danger" onclick="deleteProject(${project.id})">Delete</button>
+                    `;
+                });
+            }
+        });
+    }
+
+
+
+    // Delete a project
+    function deleteProject(id) {
+        eel.delete_project(id)(function () {
+            fetchProjects();  // Refresh project list
+        });
+    }
+
+    //Add videos function
+    function AddVideos(ProjectId) {
+        $('#hdnActiveProject').val(ProjectId);
+        getAllVideos(ProjectId);
+        $('#AddModal').modal('show');
+    }
+
+    function getAllVideos(ProjectId) {
+        $('#videoList').html('');
+        eel.list_videos(ProjectId)(function (combinedData) {
+            // Split the combined data on '|'
+            const [projectPath, videos] = combinedData.split('|');
+            // Split the videos list on '~'
+            const videoArray = (typeof videos === 'string') ? videos.split('~') : [];
+            // Update folderPath to be used for video source
+            const folderPath = projectPath.replace(/\\/g, '/');
+
+            const videoList = $('#videoList');
+
+
+            if (videoArray.length === 0) {
+                videoList.append('<p>No videos found.</p>');
+            } else {
+                videoArray.forEach((video, index) => {
+                    video = video.trim();
+
+                    // Only process non-empty video names
+                    if (video) {
+
+                        var a = "./" + folderPath.replace("Web/", "") + "/" + video;
+                        alert(a);
+                        const videoElement = `
+                        
+                                
+                                    <div class="col-md-4">
+                                        <div class="video-library">
+                                            <div class="video-item">
+                                                <video controls>
+                                                    <source src="${a}" type="video/mp4">                                                            
+                                                </video>
+                                            </div>  
+                                        </div>                                         
+                                    </div>                                                                                   
+                                                              
+                           `;
+                        videoList.append(videoElement);
+                    }
+                });
+            }
+        });
+    }
+
+    function closeModal() {
+        $('.modal').modal('hide');
+    }
+    fetchProjects();
+</script>
+<script type="text/javascript">
+    function getPathToFiles() {
+        eel.pythonFunction()(r => AddProjectVideos(r));
+    };
+    function AddProjectVideos(r) {
+        eel.saveProjectVideos($('#hdnActiveProject').val(), r)
+        getAllVideos($('#hdnActiveProject').val())
+    }
+    // Redirect to VideoDetails.html with the ProjectId in the query string
+    function redirectToVideoDetails() {
+        const projectId = $('#hdnActiveProject').val();
+        if (projectId) {
+            closeModal();               
+            page = `Pages/VideoDetails.html`;
+            $('#content').load(page);
+        } else {
+            alert("Project ID is missing");
+        }
+    }
+
+</script>

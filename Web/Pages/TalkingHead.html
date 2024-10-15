@@ -1,0 +1,203 @@
+<style>
+  .progress {
+    height: 25px;
+  }
+
+  .video-card {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .video-card video {
+    width: 100%;
+    height: 200px;
+  }
+
+  .no-videos-message {
+    font-size: 1.2em;
+    color: gray;
+  }
+
+  .alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+    display: none;
+  }
+</style>
+<div class="container mt-4">
+  <div class="alert alert-danger" id="errorAlert" role="alert"></div>
+  <div class="row">
+    <div class="col-md-12 text-right">
+      <button id="btnAddModal" class="btn btn-warning"><b>+ Talking Heads</b></button>
+    </div>
+  </div>
+
+  <div class="progress mt-2">
+    <div class="progress-bar" id="progress-bar" role="progressbar" style="width: 0%;">0%</div>
+  </div>
+
+  <div class="row mt-4" id="video-library">
+    <p id="no-videos-message" class="no-videos-message text-center w-100">No videos generated yet.</p>
+  </div>
+</div>
+
+<div class="modal fade" id="staticBackdrop" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Create Talking Head</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="clearFields()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+          <a class="nav-link active" id="nav-text-tab" data-toggle="tab" href="#nav-text" role="tab"
+            onclick="clearFields()">Text</a>
+          <a class="nav-link" id="nav-audio-tab" data-toggle="tab" href="#nav-audio" role="tab"
+            onclick="clearFields()">Audio</a>
+        </div>
+        <div class="tab-content" id="nav-tabContent">
+          <div class="tab-pane fade show active" id="nav-text" role="tabpanel">
+            <textarea id="txtContent" class="form-control mt-2" placeholder="Enter text here"></textarea>
+            <input type="file" class="form-control mt-2" id="fuImage1" accept="image/*">
+            <button type="button" class="btn btn-success mt-2" style="width: 100%;" id="btnV1Submit">Generate</button>
+          </div>
+          <div class="tab-pane fade" id="nav-audio" role="tabpanel">
+            <button type="button" class="form-control mt-1" onclick="getPathToFiles('audio')">Audio File</button>
+            <button type="button" class="form-control mt-1" onclick="getPathToFiles('image')">Image File</button>
+            <button type="button" class="btn btn-success mt-2" style="width: 100%;" id="btnV2Submit">Generate</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<input type="hidden" id="hdnAudioFile">
+<input type="hidden" id="hdnImageFile">
+
+<script type="text/javascript">
+  function getPathToFiles(a) {
+    if (a == "audio") {
+      eel.pythonFunction1()(r => addAudio(r));
+    }
+    else {
+      eel.pythonFunction2()(r => addImage(r));
+    }
+
+  };
+  function addAudio(paths) {
+    paths.forEach(function (path) {
+      eel.copy_file(path)(function (destinationPath) {
+        $('#hdnAudioFile').val(destinationPath);
+        alert('Audio added successfully!');
+      });
+    });
+  }
+
+  function addImage(paths) {
+    paths.forEach(function (path) {
+      eel.copy_file(path)(function (destinationPath) {
+        $('#hdnImageFile').val(destinationPath);
+        alert('Image added successfully!');
+      });
+    });
+  }
+
+  $(document).ready(function () {
+    refresh_video_library();
+
+    $('#btnAddModal').click(function () {
+      clearFields();
+      $('#staticBackdrop').modal('show');
+    });
+
+    $('#btnV1Submit').click(function () {
+      const text = $('#txtContent').val();
+      const imageFile = $('#fuImage1')[0].files[0];
+
+      if (!text || !imageFile) {
+        alert("Please provide both text and an image.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        eel.generate_talking_head_from_text(text, e.target.result);
+        $('#staticBackdrop').modal('hide');
+      };
+      reader.readAsDataURL(imageFile);
+      $('#staticBackdrop').modal('hide');
+      refresh_video_library()
+    });
+
+    $('#btnV2Submit').click(function () {
+      if (!$('#hdnAudioFile').val() || !$('#hdnImageFile').val()) {
+        alert("Please provide both audio and an image.");
+        return;
+      }
+      eel.generate_talking_head_from_audio($('#hdnAudioFile').val(), $('#hdnImageFile').val());
+      $('#staticBackdrop').modal('hide');
+      refresh_video_library();
+    });
+  });
+
+  eel.expose(show_error_alert);
+  function show_error_alert(message) {
+    $('#errorAlert').text(message).show();
+    setTimeout(function () {
+      $('#errorAlert').fadeOut();
+    }, 3000);
+  }
+
+  eel.expose(update_progress_bar);
+  function update_progress_bar(progress) {
+    $('#progress-bar').css('width', progress + '%').text(progress + '%');
+  }
+
+  eel.expose(refresh_video_library);
+function refresh_video_library() {
+  // Call the Python function using Eel
+  eel.refresh_video_library()(function (data) {
+    // Clear the current video library content
+    $('#video-library').empty();
+    $('#video-library').html('');
+
+    if (data.length === 0) {
+      // If no videos are present, display a message
+      $('#video-library').append('<p class="no-videos-message text-center w-100">No videos generated yet.</p>');
+    } else {
+      // Loop through each video path and create a video card in the library
+      data.forEach(function (videoPath) {
+        var a = videoPath.replace("Web/", "");
+        $('#video-library').append(`
+          <div class="col-md-4 video-card">
+            <video class="plyr__video-embed" controls>
+              <source src="${a}" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        `);
+      });
+
+      // Initialize Plyr on all video elements
+      const players = Plyr.setup('.plyr__video-embed');
+    }
+  });
+}
+
+
+
+  function clearFields() {
+    $('#txtContent').val('');
+    $('#fuImage1').val('');
+    $('#fuAudioFile').val('');
+    $('#fuImage2').val('');
+    $('#hdnAudioFile').val('');
+    $('#hdnImageFile').val('');
+  }
+</script>

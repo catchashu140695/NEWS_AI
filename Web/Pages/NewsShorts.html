@@ -1,0 +1,371 @@
+<style>
+    .card-text {
+        height: 150px;
+        /* Adjust the height as needed */
+        overflow: hidden;
+        /* Hide the overflowing content */
+        text-overflow: ellipsis;
+        /* Add ellipsis (...) if the text overflows */
+        display: -webkit-box;
+        -webkit-line-clamp: 5;
+        /* Number of lines to display */
+        -webkit-box-orient: vertical;
+        line-clamp: 5;
+        /* Standard line-clamp property for future compatibility */
+        box-orient: vertical;
+        /* Standard equivalent of WebKit's box-orient */
+    }
+
+
+    .table th img,
+    .table td img {
+        width: 30px;
+        height: 56px;
+        border-radius: 0% !important;
+    }
+
+    .table th,
+    .table td {
+        vertical-align: middle;
+        font-size: 0.875rem;
+        line-height: 1;
+        white-space: normal !important;
+        padding: 0.9375rem;
+    }
+</style>
+
+
+<div class="row">
+    <div class="col-12">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <a class="nav-link active" id="add-tab" data-toggle="tab" href="#add" role="tab" aria-controls="add"
+                    aria-selected="true">Add</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" id="view-tab" data-toggle="tab" href="#view" role="tab" aria-controls="view"
+                    aria-selected="false">View</a>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="add" role="tabpanel" aria-labelledby="add-tab">
+                <div class="card" style="background: transparent;">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="topic">Topic</label>
+                                <input type="text" class="form-control" id="topic"
+                                    placeholder="Enter topic to fetch news">
+                            </div>
+                            <div class="col-md-2 mt-2">
+                                <br>
+                                <button onclick="getNews()" type="button" class="btn btn-primary">Fetch
+                                    News</button>
+                            </div>
+                        </div>
+
+                        <div id="newsCards" ></div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="view" role="tabpanel" aria-labelledby="view-tab">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col-md-6">
+                                <h5 class="card-title">View News Articles</h5>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <a class="btn btn-success" id="startProcess">Start Bot</a>
+
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Title</th>
+                                        <th scope="col">Description</th>
+                                        <th scope="col">Image</th>
+                                        <th scope="col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="newsTableBody">
+                                    <tr>
+                                        <td colspan="4">No Records Found !!!</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="modal fade" id="AddModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Add News Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <button class="btn btn-sm btn-info" id="btnCopyContent" onclick="copyContent()">Copy
+                            Content</button>
+                        <button class="btn btn-sm btn-info" id="btnCopyTDT" onclick="copyTDT()">Copy TDT</button>
+                        <button class="btn btn-sm btn-info" id="btnCopyTDT" onclick="AutoFill()">Auto Fill</button>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <span>Content</span>
+                        <textarea class="form-control" id="txtContent" style="height: 150px;"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <span>Youtube Title</span>
+                        <textarea class="form-control" id="txtYoutubeTitle" style="height: 150px;"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <span>Youtube Description</span>
+                        <textarea class="form-control" id="txtYoutubeDescription" style="height: 150px;"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <span>Youtube Tags</span>
+                        <textarea class="form-control" id="txtYoutubeTags" style="height: 150px;"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <span>Instagram Description</span>
+                        <textarea class="form-control" id="txtInstagramDescription" style="height: 150px;"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="add_news_to_db()">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" value="0" id="hdnTitle" />
+<input type="hidden" value="0" id="hdnDescription" />
+<input type="hidden" value="0" id="hdnURL" />
+<input type="hidden" value="0" id="hdnImageURL" />
+
+<script>
+    function fetchNews(topic) {
+        eel.fetch_news(topic)(function (newsArticles) {
+            const $newsCards = $('#newsCards');
+            $newsCards.empty();
+            let html = '<div class="row">';
+            $.each(newsArticles, function (index, article) {
+
+                const sanitizeString = (str) => {
+                    return str ? str.replace(/[^a-zA-Z0-9 ]/g, '') : '';
+                };
+
+                // Sanitize title and description
+                const sanitizedTitle = sanitizeString(article.title);
+                const sanitizedDescription = sanitizeString(article.description);
+
+                // Check if url_to_image is not null, not empty, and ends with .jpg
+                if (article.url_to_image && article.url_to_image.endsWith('.jpg')) {
+                    html += `
+                        <div class="col-md-3">
+                            <div class="card" style="height:550px;padding:5px;margin-top:10px;">
+                                <img src="${article.url_to_image}" style="height:180px;" class="card-img-top" alt="...">
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title">${sanitizedTitle}</h5>
+                                    <p class="card-text">${sanitizedDescription}</p>
+                                    <div class="mt-auto row">
+                                        <a href="${article.url}" class="btn btn-info col-md-6" target="_blank">Read more</a>
+                                        <button class="btn btn-success btn-sm col-md-6" onclick="AddModal('${sanitizedTitle}', '${sanitizedDescription}', '${article.url}', '${article.url_to_image}')">Add</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                }
+            });
+
+            html += '</div>';
+            $newsCards.html(html);
+        });
+    }
+
+    // Function to fetch and display added news articles
+    function fetchAndDisplayAddedNews() {
+        eel.get_added_news()(function (newsArticles) {
+            const $newsTableBody = $('#newsTableBody');
+            $newsTableBody.empty();
+
+            $.each(newsArticles, function (index, article) {
+                const row = `<tr>
+                    <td>${article.title}</td>
+                    <td>${article.description}</td>
+                    <td><img src="${article.url_to_image}" alt="News Image" style="width: 100px;"></td>
+                    <td>
+                        <button class="btn btn-danger btn-sm delete-article" data-id="${article.NewsId}">Delete</button>
+                    </td>
+                </tr>`;
+                $newsTableBody.append(row);
+            });
+
+            // Add event listeners to delete buttons
+            $('.delete-article').on('click', function () {
+                const newsId = $(this).data('id');
+                eel.delete_news_from_db(newsId)(function (response) {
+                    if (response === "Success") {
+                        fetchAndDisplayAddedNews();
+                        Swal.fire({
+                            title: 'Hurray',
+                            text: 'News Deleted Successfully !!!',
+                            icon: 'success',
+                            confirmButtonText: 'Ok'
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Hurray',
+                            text: 'Failure deleting News !!!',
+                            icon: 'error',
+                            confirmButtonText: 'Ok'
+                        });
+                    }
+                });
+            });
+        });
+    }
+    function AddModal(title, description, url, url_to_image) {
+        $('#hdnTitle').val(title);
+        $('#hdnDescription').val(description);
+        $('#hdnURL').val(url);
+        $('#hdnImageURL').val(url_to_image);
+        $('#AddModal').modal("show");
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(function () {
+            Swal.fire({
+                title: 'Hurray',
+                text: 'Copied to clipboard !!!',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+            });
+        }, function () {
+            Swal.fire({
+                title: 'Oops',
+                text: 'Failed to Copy text !!!',
+                icon: 'error',
+                confirmButtonText: 'Ok'
+            });
+        });
+    }
+
+    function copyContent() {
+        const NewsUrl = $('#hdnURL').val();
+        eel.get_website_content(NewsUrl)(function (response) {
+            const textToCopy = "write a summary in hindi for about 30 seconds for - :" + response;
+            copyToClipboard(textToCopy);
+        });
+    }
+
+    function copyTDT() {
+        const NewsTitle = $('#hdnTitle').val();
+        const NewsDescription = $('#hdnDescription').val();
+        const textToCopy = "consider you are a youtuber. write Search Engine Optimised youtube title, description, youtube tags, instagraam description including hashtags in english language for the news having title :" + NewsTitle + " and having description :" + NewsDescription + ". Youtube Tags should be comma separated.";
+        copyToClipboard(textToCopy);
+    }
+
+    function AutoFill() {
+        const NewsTitle = $('#hdnTitle').val();
+        const NewsDescription = $('#hdnDescription').val();
+        const NewsUrl = $('#hdnURL').val();
+        const content = "write summary in hindi for 30 seconds for news " + NewsTitle + NewsDescription;
+        const title = "write youtube title in english for news " + NewsTitle + NewsDescription;
+        const description = "write youtube description in english for news " + NewsTitle + NewsDescription;
+        const tags = "write youtube tags separated by comma for news " + NewsTitle + NewsDescription;
+        const instagramDescription = "write instagram description in english along with hash tags for news " + NewsTitle + NewsDescription;
+
+        eel.get_chat_response(content)(function (response) {
+            $('#txtContent').val(response.replace(/"/g, ''));
+        });
+        eel.get_chat_response(title)(function (response) {
+            $('#txtYoutubeTitle').val(response.replace(/"/g, ''));
+        });
+        eel.get_chat_response(description)(function (response) {
+            $('#txtYoutubeDescription').val(response.replace(/"/g, ''));
+        });
+        eel.get_chat_response(tags)(function (response) {
+            $('#txtYoutubeTags').val(response.replace(/"/g, ''));
+        });
+        eel.get_chat_response(instagramDescription)(function (response) {
+            $('#txtInstagramDescription').val(response.replace(/"/g, ''));
+        });
+    }
+
+    function add_news_to_db() {
+        const title = $('#hdnTitle').val();
+        const description = $('#txtContent').val();
+        const url = $('#hdnURL').val();
+        const ImageUrl = $('#hdnImageURL').val();
+        const youtubeTitle = $('#txtYoutubeTitle').val();
+        const youtubeDescription = $('#txtYoutubeDescription').val();
+        const youtubeTags = $('#txtYoutubeTags').val();
+        const instagramDescription = $('#txtInstagramDescription').val();
+
+        eel.add_news_to_db(title, description, url, ImageUrl, youtubeTitle, youtubeDescription, youtubeTags, instagramDescription)(function (response) {
+            if (response === "Success") {
+                $('#hdnTitle, #hdnDescription, #hdnURL, #hdnImageURL, #txtYoutubeTitle, #txtYoutubeDescription, #txtYoutubeTags, #txtInstagramDescription, #txtContent').val('');
+                $('#AddModal').modal("hide");
+                Swal.fire({
+                    title: 'Hurray',
+                    text: 'News Added Successfully !!!',
+                    icon: 'success',
+                    confirmButtonText: 'Ok'
+                });
+            } else {
+                Swal.fire({
+                    title: 'Oops',
+                    text: 'Fail to add News !!!',
+                    icon: 'error',
+                    confirmButtonText: 'Ok'
+                });
+            }
+        });
+    }
+
+    function getNews() {
+        fetchNews($('#topic').val());
+    }
+    $(document).ready(function () {
+        fetchNews('bollywood');
+        // Fetch and display added news articles when the "View" tab is shown
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            if ($(e.target).attr('id') === 'view-tab') {
+                fetchAndDisplayAddedNews();
+            }
+        });
+
+
+
+        $('#startProcess').on('click', function () {
+            Swal.fire({
+                title: 'Hurray',
+                text: 'Bot process started !!!',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+            });
+            eel.startProcess();
+        });
+    });
+
+</script>
