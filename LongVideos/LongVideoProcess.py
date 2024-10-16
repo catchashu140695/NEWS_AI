@@ -146,7 +146,7 @@ def generate_talking_head(audio_path, image_path, output_path):
     
     # Example: Call an external script or system command to generate talking head
     # This could be a machine learning model that syncs lips to audio
-    os.system(f"python .\SadTalker\inference.py --driven_audio {audio_path} --source_image {image_path} --result_dir {output_path}  --preprocess full")
+    os.system(f"python .\SadTalker\inference.py --driven_audio {audio_path} --source_image {image_path} --result_dir {output_path} --still  --preprocess full")
     
     print(f"Talking head video generated in: {output_path}")
 

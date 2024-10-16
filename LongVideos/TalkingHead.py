@@ -73,7 +73,7 @@ def convert_text_to_audio(text, audio_path):
     tts.save(audio_path)
 
 def start_sadtalker_process(image_path, audio_path):
-    command = f"python SadTalker/inference.py --driven_audio {audio_path} --source_image {image_path} --result_dir {VIDEO_OUTPUT_FOLDER} --preprocess full"
+    command = f"python SadTalker/inference.py --driven_audio {audio_path} --source_image {image_path} --result_dir {VIDEO_OUTPUT_FOLDER} --still --preprocess full"
     subprocess.run(command, shell=True)
     if os.path.exists("TalkingHeads"):
             shutil.rmtree("TalkingHeads")
