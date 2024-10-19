@@ -53,7 +53,7 @@ def start_long_video_process(project_id):
         talking_heads_folder=os.path.join(base_folder,"TalkingHeads")      
         audio_path=os.path.join(base_folder,"Audios",filename_without_ext + ".mp3")
         talking_head_output_path=os.path.join(talking_heads_folder,filename_without_ext)
-        talking_head_image_path=os.path.join("Web","assets","images","vendor","Headlines.jpg")
+        talking_head_image_path=os.path.join("Web","assets","images","vendor","Headlines.png")
         generate_talking_head(audio_path, talking_head_image_path, talking_head_output_path)
         util.rename_first_mp4(talking_head_output_path,filename_without_ext + ".mp4") 
               
@@ -193,8 +193,57 @@ def startVideoEditing(project_id):
     headlines = fetch_concatenated_introductions(project_id)   
     headlines *= 100     
     add_scrolling_text_to_video(os.path.join(base_folder, "NewsMerged.mp4"),os.path.join(base_folder, "Final.mp4"),headlines)
-    add_breaking_news_footer(os.path.join(base_folder, "Final.mp4"))
+    
+    add_breaking_news_footer(os.path.join(base_folder, "Din_Bhar_ki_Badi_khabbar.mp4"))
+    create_thumbnail('Web\\assets\\images\\vendor\\Headlines.png',os.path.join(base_folder,"thumnbail.png"))
     return "success"
+
+def create_thumbnail(image_path, output_path):
+    # Define the text to be added to the image
+    current_date = datetime.now().strftime('%d-%b-%Y')
+    main_text = "Aaj Ki\nBadi\nKhabbar"
+
+    # Load the image
+    image_clip = ImageClip(image_path)
+
+    # Create the shadow text clip (slightly offset and darker color)
+    shadow_clip = TextClip(
+        main_text,
+        fontsize=150,  # Font size for the main text
+        font='Verdana-Bold',
+        color='black',  # Shadow color
+        align='West',
+        stroke_color='black',
+        stroke_width=15  # Increased stroke width for more boldness
+    ).set_position((55, 55)).set_duration(10)  # Offset shadow position for effect
+
+    # Create the main text clip with bolder white text
+    main_text_clip = TextClip(
+        main_text,
+        fontsize=150,  # Adjust the font size as needed
+        font='Verdana-Bold',
+        color='white',
+        align='West',
+        stroke_color='red',  # Black stroke for better visibility
+        stroke_width=8  # Increased stroke width for more boldness
+    ).set_position((50, 50)).set_duration(10)  # Adjust position as needed
+
+    # Create the date text clip with a different color
+    date_clip = TextClip(
+        current_date,
+        fontsize=150,  # Same font size as the main text
+        font='Verdana-Bold',
+        color='yellow',  # Change to your preferred color for the date
+        align='West',
+        stroke_color='black',  # Black stroke to maintain visibility
+        stroke_width=10
+    ).set_position((50, 580)).set_duration(10)  # Position the date below the main text
+
+    # Composite the image, shadow, main text, and date together
+    final_clip = CompositeVideoClip([image_clip, shadow_clip, main_text_clip, date_clip])
+
+    # Save the output to the specified path
+    final_clip.save_frame(output_path)
 
 def merge_videos_with_intro(intro_file_path, videos_folder_path, output_path):
     """
