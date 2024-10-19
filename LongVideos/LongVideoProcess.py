@@ -53,7 +53,7 @@ def start_long_video_process(project_id):
         talking_heads_folder=os.path.join(base_folder,"TalkingHeads")      
         audio_path=os.path.join(base_folder,"Audios",filename_without_ext + ".mp3")
         talking_head_output_path=os.path.join(talking_heads_folder,filename_without_ext)
-        talking_head_image_path=os.path.join("Web","assets","images","vendor","Headlines.png")
+        talking_head_image_path=os.path.join("Web","assets","images","vendor","Headlines.jpg")
         generate_talking_head(audio_path, talking_head_image_path, talking_head_output_path)
         util.rename_first_mp4(talking_head_output_path,filename_without_ext + ".mp4") 
               
@@ -163,7 +163,7 @@ def add_video_overlay(background_video_path, overlay_video_path, output_path):
         # Load and resize the overlay video
         overlay_video = (VideoFileClip(overlay_video_path)
                          .set_duration(video_duration)
-                         .resize(height=350)
+                         .resize(height=430)
                          .without_audio())
         
         # Loop the overlay video
@@ -374,7 +374,7 @@ def sendEmail(projectId):
     util.send_emails(subject, message, attachment_path)
 
 if __name__ == "__main__":
-    project_id = "7"
+    project_id = "6"
     start_long_video_process(project_id) 
     startVideoEditing(project_id)  
     #sendEmail(project_id)

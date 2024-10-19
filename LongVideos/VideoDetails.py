@@ -98,7 +98,8 @@ def get_chat_response(prompt):
         "I'm here to assist you with your inquiries",  # Pattern 1
         "One message exceeds the 1000chars per message limit",  # Pattern 2
         "One message exceeds the 1000 characters per message limit",  # Pattern 3
-        "I'm sorry, I cannot assist with that request. If you have any other questions or need help, feel free to ask!"  # Pattern 4
+        "I'm sorry, I cannot assist with that request. If you have any other questions or need help, feel free to ask!",  # Pattern 4
+        "I am here to help with inquiries, issues, and requests. If you have any questions or need assistance, feel free to ask!"
     ]  
 
     def custom_similarity(pattern, response_text):

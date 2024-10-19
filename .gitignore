@@ -144,6 +144,12 @@ cython_debug/
 NewsAppV2
 NEWSAI
 gfpgan
+LongNewsProjects
+Web/LongNewsProjects
+Web/TalkingHeadProjects
+Web/TrimmedVideos
+Web/Videos
+Web/YTDownloads
 examples/results/*
 SadTalker/gfpgan/*
 SadTalker/checkpoints/*
