@@ -150,6 +150,7 @@ Web/TalkingHeadProjects
 Web/TrimmedVideos
 Web/Videos
 Web/YTDownloads
+NEWSAI_DB.db
 examples/results/*
 SadTalker/gfpgan/*
 SadTalker/checkpoints/*

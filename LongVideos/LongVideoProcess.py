@@ -17,6 +17,7 @@ from Utilities import util
 from datetime import datetime
 import re
 from pydub import effects
+import cv2
 
 
 # Configure logging
@@ -56,6 +57,13 @@ def start_long_video_process(project_id):
         talking_head_image_path=os.path.join("Web","assets","images","vendor","Headlines.png")
         generate_talking_head(audio_path, talking_head_image_path, talking_head_output_path)
         util.rename_first_mp4(talking_head_output_path,filename_without_ext + ".mp4") 
+        
+        
+        crop_and_overlay_video(
+        os.path.join(base_folder,"TalkingHeads",filename_without_ext,filename_without_ext + ".mp4"),
+        os.path.join(base_folder,"raw_videos",filename_without_ext + ".mp4"),  # Specify the path to your overlay video
+        os.path.join(base_folder,"Shorts",filename_without_ext + ".mp4")
+            )
               
         # Output path for the video with overlay news
         overlay_output_file_path = os.path.join(base_folder, "NewsOverlay", filename_without_ext)
@@ -194,8 +202,11 @@ def startVideoEditing(project_id):
     headlines *= 100     
     add_scrolling_text_to_video(os.path.join(base_folder, "NewsMerged.mp4"),os.path.join(base_folder, "Final.mp4"),headlines)
     
-    add_breaking_news_footer(os.path.join(base_folder, "Din_Bhar_ki_Badi_khabbar.mp4"))
+    add_breaking_news_footer(os.path.join(base_folder, "Final.mp4"))
     create_thumbnail('Web\\assets\\images\\vendor\\Headlines.png',os.path.join(base_folder,"thumnbail.png"))
+    
+    sendEmail(project_id)
+    
     return "success"
 
 def create_thumbnail(image_path, output_path):
@@ -388,42 +399,176 @@ def add_scrolling_text_to_video(video_path, output_path, text, font="Verdana", f
     # Write the final video with scrolling text
     final_video.write_videofile(output_path, codec="libx264", fps=video.fps)
 
-def sendEmail(projectId):
-    YoutubeTitle='Latest News - ' + datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 
-    YoutubeDescription='''
-    Stay informed with the latest updates on Politics. At UB News, we bring you the most accurate and up-to-date news from around the world, covering everything from relevant topics like politics, technology, entertainment etc..
-
-
-        📢 SUBSCRIBE to UB News for daily news updates: [Insert subscription link]
-        📱 Follow us on social media:
-        - Facebook: facebook.com/UnsignedBenny
-        - Twitter: twitter.com/UnsignedBenny
-        - Instagram: instagram.com/UnsignedBenny
-        #UBNews #LatestNews #BreakingNews #NewsUpdate 
-    ''', 
-    YoutubeTags="", 
-    InstagramDescription="", 
-    destFileName=""
-    subject = 'Latest News - ' + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    message = f"""
-    <html>
-    <body>
-    <b>Youtube Title: </b> {YoutubeTitle}<br><br>
-    <b>Youtube Description: </b> {YoutubeDescription}<br><br>   
-    </body>
-    </html>
-    """
+def detect_face(frame):
+    # Load the pre-trained Haar Cascade classifier for face detection
+    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
     
-    attachment_path = f"./LongNewsProjects/{project_id}/Final.mp4"   
+    # Convert the frame to grayscale
+    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    
+    # Detect faces
+    faces = face_cascade.detectMultiScale(gray_frame, scaleFactor=1.1, minNeighbors=5)
+    
+    if len(faces) > 0:
+        # Return the coordinates of the first detected face
+        return faces[0]  # (x, y, width, height)
+    
+    return None
 
-    # Send email
-    util.send_emails(subject, message, attachment_path)
+def crop_and_overlay_video(video_path, footage_path, output_path):
+    # Create the output directory if it doesn't exist
+    output_dir = os.path.dirname(output_path)
+    if not os.path.exists(output_dir) and output_dir:
+        os.makedirs(output_dir)
+
+    # Load the main video
+    video = VideoFileClip(video_path)
+    
+    # Load the footage to overlay
+    overlay_video = VideoFileClip(footage_path)
+
+    # Get the original width and height
+    original_width, original_height = video.size
+    
+    # Crop the video to keep the right half
+    right_half_video = video.crop(x1=original_width // 2, y1=0, x2=original_width, y2=original_height)
+
+    # Extract a frame from the right half video for face detection
+    frame = right_half_video.get_frame(0)  # Get the first frame
+    face_coords = detect_face(frame)
+
+    if face_coords is None:
+        print("No face detected.")
+        # Write the right half video without further cropping
+        right_half_video.write_videofile(output_path, codec='libx264', audio_codec='aac')
+        return
+
+    # Get face coordinates
+    x, y, w, h = face_coords
+    face_center_x = x + w // 2
+    face_center_y = y + h // 2
+
+    # Calculate the new width for 9:16 ratio
+    new_width = (9 / 16) * original_height
+
+    # Calculate cropping coordinates to center the face
+    x1 = max(face_center_x - new_width // 2, 0)
+    x2 = min(face_center_x + new_width // 2, right_half_video.w)
+
+    # Crop the right half video to 9:16 while keeping the original height
+    cropped_video = right_half_video.crop(x1=x1, y1=0, x2=x2, y2=original_height)
+
+    # Set the audio from the original video to the cropped video
+    final_video = cropped_video.set_audio(video.audio)
+
+    # Increase overlay height to adjust its position
+    overlay_height = int(original_height // 4 * 1.4)  # Increase height by 40%
+    overlay_video = overlay_video.resize(height=overlay_height)  # Resize overlay
+
+    # Position the overlay video at the bottom center of the main video
+    overlay_x = (final_video.w - overlay_video.w) // 2  # Center horizontally based on cropped video width
+    overlay_y = final_video.h - overlay_video.h - 20  # Align to bottom with a small offset
+
+    # Create a composite video with the overlay
+    final_composite = CompositeVideoClip([
+        final_video.set_position("center"),  # Keep the main video centered
+        overlay_video.set_position((overlay_x, overlay_y))  # Set position for overlay
+    ], size=final_video.size)  # Ensures the composite has the correct size
+
+    # Set the audio from the original video to the final composite video
+    final_composite = final_composite.set_audio(final_video.audio)
+
+    # Write the final output video with audio and retain the original video length
+    final_composite.set_duration(video.duration).write_videofile(output_path, codec='libx264', audio_codec='aac')
+
+    # Close the video clips to free resources
+    video.close()
+    right_half_video.close()
+    cropped_video.close()
+    overlay_video.close()
+    
+def sendEmail(projectId):
+    # Define the root folder where the MP4 files are stored
+    process_root_folder = f"./LongNewsProjects/{projectId}/Shorts"
+
+    # Find all MP4 files in the specified directory
+    mp4_files = glob.glob(os.path.join(process_root_folder, '*.mp4'))
+
+    # Loop through each MP4 file and process it
+    for file in mp4_files:
+        # Get the filename without the extension to match it with video_id in the database
+        filename_without_ext = os.path.splitext(os.path.basename(file))[0]
+
+        # Connect to the database (update the path to your SQLite database if necessary)
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+
+        # Fetch data from the news_master table based on the video_id
+        cursor.execute('''
+            SELECT id, project_id, video_id, transcription, headline, introduction,
+                   full_story, yt_title, yt_description, yt_tags, insta_description, status
+            FROM news_master
+            WHERE video_id = ?
+        ''', (filename_without_ext,))
+        
+        row = cursor.fetchone()
+        
+        # Check if the data was found in the database
+        if row:
+            (id, project_id, video_id, transcription, headline, introduction, 
+             full_story, yt_title, yt_description, yt_tags, insta_description, status) = row
+
+            # Use the YouTube and Instagram details from the database
+            YoutubeTitle = yt_title if yt_title else f"Latest News - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+            YoutubeDescription = yt_description if yt_description else "Stay informed with the latest updates."
+            YoutubeTags = yt_tags if yt_tags else ""
+            InstagramDescription = insta_description if insta_description else ""
+
+            # Create the email subject and message
+            subject = f"Latest News - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+            message = f"""
+            <html>
+            <body>
+            <b>YouTube Title: </b> {YoutubeTitle}<br><br>
+            <b>YouTube Description: </b> {YoutubeDescription}<br><br>
+            <b>YouTube Tags: </b> {YoutubeTags}<br><br>
+            <b>Instagram Description: </b> {InstagramDescription}<br><br>
+            </body>
+            </html>
+            """
+
+            # Define the attachment path
+            attachment_path = f"./LongNewsProjects/{project_id}/Shorts/{filename_without_ext}.mp4"
+
+            # Email sending process with retries
+            max_retries = 3  # Set the maximum number of retries
+            attempts = 0
+            email_sent = False
+            
+            while attempts < max_retries and not email_sent:
+                try:
+                    util.send_emails(subject, message, attachment_path)
+                    email_sent = True  # Email sent successfully
+                    print(f"Email sent successfully for video ID: {filename_without_ext}")
+                except Exception as e:
+                    attempts += 1
+                    print(f"Attempt {attempts} failed to send email for video ID: {filename_without_ext}. Error: {e}")
+                    if attempts < max_retries:
+                        print("Retrying...")
+                    else:
+                        print(f"Failed to send email for video ID: {filename_without_ext} after {max_retries} attempts.")
+
+        else:
+            print(f"No data found for video ID: {filename_without_ext}")
+
+        # Close the database connection
+        conn.close()  
 
 if __name__ == "__main__":
     project_id = "6"
-    #start_long_video_process(project_id) 
+    start_long_video_process(project_id) 
     startVideoEditing(project_id)  
-    #sendEmail(project_id)
+    sendEmail(project_id)
      
       
     

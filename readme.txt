@@ -14,6 +14,8 @@ pip install gtts playsound
 pip install pygame
 pip install pydub
 pip install newsapi-python
+pip install mediapipe
+
 
 
 --Prepare exe--
