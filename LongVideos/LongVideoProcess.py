@@ -279,14 +279,11 @@ def add_breaking_news_footer(video_path, footer_height=120, footer_color=(196, 3
         text_clip = TextClip("Headlines", font="Verdana", fontsize=60, color="white")
         text_width, text_height = text_clip.size
         text_clip = text_clip.set_duration(video_duration)
-        text_clip = text_clip.set_position((30,video_height - 100))
-        
-        logo = ImageClip("Web/assets/images/vendor/logo.png").set_duration(video.duration)       
-        logo = logo.resize(height=100).set_position((100, video_width-100))
+        text_clip = text_clip.set_position((30,video_height - 100))     
         
 
         # Add the footer to the video
-        final_video = CompositeVideoClip([video, footer, text_clip, logo])
+        final_video = CompositeVideoClip([video, footer, text_clip])
 
         # Replace the original video with the modified video (overwrite)
         temp_output_path = video_path.replace('.mp4', '_temp.mp4')
@@ -375,7 +372,7 @@ def sendEmail(projectId):
 
 if __name__ == "__main__":
     project_id = "6"
-    start_long_video_process(project_id) 
+    #start_long_video_process(project_id) 
     startVideoEditing(project_id)  
     #sendEmail(project_id)
      
