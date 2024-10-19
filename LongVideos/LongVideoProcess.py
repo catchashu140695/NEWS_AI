@@ -56,15 +56,8 @@ def start_long_video_process(project_id):
         talking_head_output_path=os.path.join(talking_heads_folder,filename_without_ext)
         talking_head_image_path=os.path.join("Web","assets","images","vendor","Headlines.png")
         generate_talking_head(audio_path, talking_head_image_path, talking_head_output_path)
-        util.rename_first_mp4(talking_head_output_path,filename_without_ext + ".mp4") 
-        
-        
-        crop_and_overlay_video(
-        os.path.join(base_folder,"TalkingHeads",filename_without_ext,filename_without_ext + ".mp4"),
-        os.path.join(base_folder,"raw_videos",filename_without_ext + ".mp4"),  # Specify the path to your overlay video
-        os.path.join(base_folder,"Shorts",filename_without_ext + ".mp4")
-            )
-              
+        util.rename_first_mp4(talking_head_output_path,filename_without_ext + ".mp4")         
+                
         # Output path for the video with overlay news
         overlay_output_file_path = os.path.join(base_folder, "NewsOverlay", filename_without_ext)
         add_video_overlay(
@@ -72,6 +65,12 @@ def start_long_video_process(project_id):
             os.path.join(process_root_folder, filename_without_ext + ".mp4"),
             overlay_output_file_path
         )
+        
+        crop_and_overlay_video(
+        os.path.join(base_folder,"TalkingHeads",filename_without_ext,filename_without_ext + ".mp4"),
+        os.path.join(base_folder,"raw_videos",filename_without_ext + ".mp4"), 
+        os.path.join(base_folder,"Shorts",filename_without_ext + ".mp4")
+            )
     
     startVideoEditing(project_id)       
     return "success"
@@ -565,7 +564,7 @@ def sendEmail(projectId):
         conn.close()  
 
 if __name__ == "__main__":
-    project_id = "6"
+    project_id = "7"
     start_long_video_process(project_id) 
     startVideoEditing(project_id)  
     sendEmail(project_id)
