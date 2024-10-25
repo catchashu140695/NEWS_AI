@@ -1,3 +1,5 @@
+
+<div id="loader" class="loader hidden"></div>
 <div class="card">
     <div class="card-header">
         <div class="row">
@@ -144,6 +146,7 @@
     });
 
     function getAllVideos(ProjectId) {
+        document.getElementById('loader').classList.remove('hidden');
         $('#videoGallery').html('');
         eel.list_videos(ProjectId)(function (combinedData) {
             const [projectPath, videos] = combinedData.split('|');
@@ -176,9 +179,11 @@
                 });
             }
         });
+        document.getElementById('loader').classList.add('hidden');
     }
 
     function openVideoDetails(video) {
+        document.getElementById('loader').classList.remove('hidden');
         clearfields();
         const videoId = video.split('.').slice(0, -1).join('.');
         const project_id=$('#hdnActiveProject').val(); 
@@ -199,6 +204,7 @@
         });
         $('#video_id').val(videoId);        
         $('#videoDetailsModal').modal('show');
+        document.getElementById('loader').classList.add('hidden');
     }
 
     function closeModal() {
@@ -210,6 +216,7 @@
 
 
     function getTranscribe() {
+        document.getElementById('loader').classList.remove('hidden');
         $('#btnGenerate').text("Generating");
         $('#btnGenerate').removeClass().addClass("btn btn-success");
         eel.transcribe_video($('#hdnActiveProject').val(), $('#video_id').val())(function (response) {
@@ -224,9 +231,10 @@
             $('#btnGenerate').text("Generate");
             $('#btnGenerate').removeClass().addClass("btn btn-primary");             
         });
-        
+        document.getElementById('loader').classList.add('hidden');
     }
     function clearfields(){
+        document.getElementById('loader').classList.remove('hidden');
         $('video_id').val('0');
         $('#txtTranscription').val('');
         $('#txtFullStory').val('');
@@ -236,65 +244,82 @@
         $('#txtYTDescription').val('');
         $('#txtYTTags').val('');
         $('#txtInstaDescription').val('');
+        document.getElementById('loader').classList.add('hidden');
     }
 
     
 
     function changeFullStory(content) {
+        document.getElementById('loader').classList.remove('hidden');
         var a = 'Write the summary in hindi adding sentences which will increase audience retention for the content:' + content;
         eel.get_chat_response(a)(function (response) {
             $('#txtFullStory').val(response.replace('"', ''));
+            document.getElementById('loader').classList.add('hidden');
         });
     }
 
     function changeIntroduction(content) {
+        document.getElementById('loader').classList.remove('hidden');
         var a = 'Write a introduction line in hindi for about 30 seconds adding catchy sentences which will increase audience retention forr the content:' + content;
         eel.get_chat_response(a)(function (response) {
             $('#txtIntroduction').val(response.replace('"', ''));
+            document.getElementById('loader').classList.add('hidden');
         });
     }
 
     function changeHeadline(content) {
+        document.getElementById('loader').classList.remove('hidden');
         var a = 'write a headline in english for about 40 seconds for the content:' + content;
         eel.get_chat_response(a)(function (response) {
             $('#txtHeadline').val(response.replace('"', ''));
+            document.getElementById('loader').classList.add('hidden');
         });
     }
 
     function changeYTTitle(content) {
+        document.getElementById('loader').classList.remove('hidden');
         var a = 'consider you are a youtuber. write a youtube title in about 100 characters in english for the content:' + content;
         eel.get_chat_response(a)(function (response) {
             $('#txtYTTitle').val(response.replace('"', ''));
+            document.getElementById('loader').classList.add('hidden');
         });
     }
 
     function changeYTDescription(content) {
+        document.getElementById('loader').classList.remove('hidden');
         var a = 'translate to english for about 100 characters for the content:' + content;
         eel.get_chat_response(a)(function (response) {
             $('#txtYTDescription').val(response.replace('"', ''));
+            document.getElementById('loader').classList.add('hidden');
         });
     }
 
     function changeYTTags(content) {
+        document.getElementById('loader').classList.remove('hidden');
         var a = 'consider you are a youtuber. write SEO youtube tags in english separated by comma for the content:' + content;
         eel.get_chat_response(a)(function (response) {
             $('#txtYTTags').val(response.replace('"', ''));
+            document.getElementById('loader').classList.add('hidden');
         });
     }
     function changeInstaDescription(content) {
+        document.getElementById('loader').classList.remove('hidden');
         var a = 'consider you are a Reel maker.write a instagram description including  trending hashtags for the content:' + content;
         eel.get_chat_response(a)(function (response) {
             $('#txtInstaDescription').val(response.replace('"', ''));
+            document.getElementById('loader').classList.add('hidden');
         });
     }
 
     $('#saveDetails').click(function () {
+        document.getElementById('loader').classList.remove('hidden');
         const videoDetails = {
             video_id: $('#video_id').val(),
             transcription: $('#transcription').val(),
             
         };        
         closeModal();
+        document.getElementById('loader').classList.add('hidden');
     });
 
     function playText(text) {
@@ -306,6 +331,7 @@
     }
 
     function saveDetails(){
+        document.getElementById('loader').classList.remove('hidden');
         const videoId = $('#video_id').val();
         const transcription = $('#txtTranscription').val();
         const headline = $('#txtHeadline').val();
@@ -335,19 +361,35 @@
         eel.save_video_details(videoDetails)(function (response) {
             if (response === 'success') {
                 clearfields();
-                alert('Video details saved successfully!');
+                document.getElementById('loader').classList.add('hidden');
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Video Details Save successfully !!!',
+                    icon: 'success',
+                    showConfirmButton: true,
+                    confirmButtonText: 'OK'
+                  });
                 
             } else {
+                document.getElementById('loader').classList.add('hidden');
                 alert('Error saving video details. Please try again.');
             }
         });
     }
 
 
-    function StartProcess(){        
+    function StartProcess(){   
+        document.getElementById('loader').classList.remove('hidden');     
         const project_id=$('#hdnActiveProject').val();
         eel.start_long_video_process(project_id);
-        alert("Process Started !!!")
+        document.getElementById('loader').classList.add('hidden');
+        Swal.fire({
+            title: 'Success',
+            text: 'Process Started !!!',
+            icon: 'success',
+            showConfirmButton: true,
+            confirmButtonText: 'OK'
+          });
     }
     
 

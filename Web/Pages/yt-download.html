@@ -87,7 +87,7 @@
         font-weight: 600;
     }
 </style>
-
+<div id="loader" class="loader hidden"></div>
 <div class="container mt-5">   
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item">
@@ -156,7 +156,7 @@
     });
 
     async function fetchFormats() {
-        $('#loader').show(); // Show the loader
+        document.getElementById('loader').classList.remove('hidden');
         const url = $('#url').val();
         const formatsDropdown = $('#formats');
         formatsDropdown.empty(); // Clear previous options
@@ -164,7 +164,7 @@
         $('#message').empty(); // Clear previous messages
 
         const response = await eel.get_available_formats(url)();
-        $('#loader').hide(); // Hide the loader
+        document.getElementById('loader').classList.add('hidden');
 
         if (Array.isArray(response) && response.length > 0) {
             response.forEach(format => {
@@ -180,17 +180,17 @@
     }
 
     async function downloadVideo() {
-        $('#loader').show(); // Show the loader
+        document.getElementById('loader').classList.remove('hidden');
         const url = $('#url').val();
         const formatId = $('#formats').val();
-        const response = await eel.download_video(url, formatId)();
-        $('#loader').hide(); // Hide the loader
+        const response = await eel.download_video(url, formatId)();        
         $('#message').html(`<div class="alert alert-success">${response}</div>`);
         loadDownloadedVideos(); // Reload the list of downloaded videos
+        document.getElementById('loader').classList.add('hidden');
     }
 
     async function loadDownloadedVideos() {
-        $('#loader').show(); // Show the loader
+        document.getElementById('loader').classList.remove('hidden');
         const videos = await eel.get_yt_downloaded_videos()();
         const videoList = $('#video-list');
         videoList.empty(); // Clear existing videos
@@ -209,7 +209,7 @@
             `);
             videoList.append(videoCard);
         });
-        $('#loader').hide(); // Hide the loader
+        document.getElementById('loader').classList.add('hidden');
 
     }
 </script>
