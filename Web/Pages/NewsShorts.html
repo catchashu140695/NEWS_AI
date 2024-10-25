@@ -160,49 +160,60 @@
 
 <script>   
     function changeContent(){
+        document.getElementById('loader').classList.remove('hidden');
         const NewsTitle = $('#hdnTitle').val();
         const NewsDescription = $('#hdnDescription').val();
         const content = "write summary in hindi for 30 seconds for news. Ask a question in the begining to attract audience. " + NewsTitle + NewsDescription;
         eel.get_chat_response(content)(function (response) {
             $('#txtContent').val(response.replace(/"/g, ''));
+            document.getElementById('loader').classList.add('hidden');
         });
     }
     function changeTitle(){
+        document.getElementById('loader').classList.remove('hidden');
         const NewsTitle = $('#hdnTitle').val();
         const NewsDescription = $('#hdnDescription').val();
         const title = "write SEO shorts description in english in about 3-4 words and also include 3-4 hashtags for news " + NewsTitle + NewsDescription;
         eel.get_chat_response(title)(function (response) {
             $('#txtYoutubeTitle').val(response.replace(/"/g, ''));
+            document.getElementById('loader').classList.add('hidden');
         });
     }
     function changeDescription(){
+        document.getElementById('loader').classList.remove('hidden');
         const NewsTitle = $('#hdnTitle').val();
         const NewsDescription = $('#hdnDescription').val();
         const description = "write SEO youtube description in english for news " + NewsTitle + NewsDescription;
         eel.get_chat_response(description)(function (response) {
             $('#txtYoutubeDescription').val(response.replace(/"/g, ''));
+            document.getElementById('loader').classList.add('hidden');
         });
     }
     function changeTags(){
+        document.getElementById('loader').classList.remove('hidden');
         const NewsTitle = $('#hdnTitle').val();
         const NewsDescription = $('#hdnDescription').val();
         const tags = "write SEO youtube tags separated by comma for news " + NewsTitle + NewsDescription;
         eel.get_chat_response(tags)(function (response) {
             $('#txtYoutubeTags').val(response.replace(/"/g, ''));
+            document.getElementById('loader').classList.add('hidden');
         });
     }
     function changeInstaDescription(){
+        document.getElementById('loader').classList.remove('hidden');
         const NewsTitle = $('#hdnTitle').val();
         const NewsDescription = $('#hdnDescription').val();
         const instagramDescription = "write SEO instagram description in english in 3-4 words along with 3-4 hash tags for news " + NewsTitle + NewsDescription;
         eel.get_chat_response(instagramDescription)(function (response) {
             $('#txtInstagramDescription').val(response.replace(/"/g, ''));
+            document.getElementById('loader').classList.add('hidden');
         });
     }
     function closeModal(){
         $(".modal").modal("hide");
     }
     function fetchNews(topic) {
+        document.getElementById('loader').classList.remove('hidden');
         eel.fetch_news(topic)(function (newsArticles) {
             const $newsCards = $('#newsCards');
             $newsCards.empty();
@@ -239,10 +250,12 @@
             html += '</div>';
             $newsCards.html(html);
         });
+        document.getElementById('loader').classList.add('hidden');
     }
 
     // Function to fetch and display added news articles
     function fetchAndDisplayAddedNews() {
+        document.getElementById('loader').classList.remove('hidden');
         eel.get_added_news()(function (newsArticles) {
             const $newsTableBody = $('#newsTableBody');
             $newsTableBody.empty();
@@ -282,6 +295,7 @@
                 });
             });
         });
+        document.getElementById('loader').classList.add('hidden');
     }
     function AddModal(title, description, url, url_to_image) {
         $('#hdnTitle').val(title);
@@ -325,6 +339,7 @@
     }
 
     function AutoFill() {
+        document.getElementById('loader').classList.remove('hidden');
         const NewsTitle = $('#hdnTitle').val();
         const NewsDescription = $('#hdnDescription').val();
         const NewsUrl = $('#hdnURL').val();
@@ -349,9 +364,11 @@
         eel.get_chat_response(instagramDescription)(function (response) {
             $('#txtInstagramDescription').val(response.replace(/"/g, ''));
         });
+        document.getElementById('loader').classList.add('hidden');
     }
 
     function add_news_to_db() {
+        document.getElementById('loader').classList.remove('hidden');
         const title = $('#hdnTitle').val();
         const description = $('#txtContent').val();
         const url = $('#hdnURL').val();
@@ -380,6 +397,7 @@
                 });
             }
         });
+        document.getElementById('loader').classList.add('hidden');
     }
 
     function getNews() {
