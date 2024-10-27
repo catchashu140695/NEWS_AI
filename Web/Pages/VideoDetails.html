@@ -215,8 +215,7 @@
 
 
 
-    function getTranscribe() {
-        document.getElementById('loader').classList.remove('hidden');
+    function getTranscribe() {        
         $('#btnGenerate').text("Generating");
         $('#btnGenerate').removeClass().addClass("btn btn-success");
         eel.transcribe_video($('#hdnActiveProject').val(), $('#video_id').val())(function (response) {
@@ -231,10 +230,10 @@
             $('#btnGenerate').text("Generate");
             $('#btnGenerate').removeClass().addClass("btn btn-primary");             
         });
-        document.getElementById('loader').classList.add('hidden');
+        
     }
     function clearfields(){
-        document.getElementById('loader').classList.remove('hidden');
+        
         $('video_id').val('0');
         $('#txtTranscription').val('');
         $('#txtFullStory').val('');
@@ -244,7 +243,7 @@
         $('#txtYTDescription').val('');
         $('#txtYTTags').val('');
         $('#txtInstaDescription').val('');
-        document.getElementById('loader').classList.add('hidden');
+        
     }
 
     
@@ -254,8 +253,9 @@
         var a = 'Write the summary in hindi adding sentences which will increase audience retention for the content:' + content;
         eel.get_chat_response(a)(function (response) {
             $('#txtFullStory').val(response.replace('"', ''));
-            document.getElementById('loader').classList.add('hidden');
+            
         });
+        document.getElementById('loader').classList.add('hidden');
     }
 
     function changeIntroduction(content) {
@@ -263,52 +263,54 @@
         var a = 'Write a introduction line in hindi for about 30 seconds adding catchy sentences which will increase audience retention forr the content:' + content;
         eel.get_chat_response(a)(function (response) {
             $('#txtIntroduction').val(response.replace('"', ''));
-            document.getElementById('loader').classList.add('hidden');
+            
         });
+        document.getElementById('loader').classList.add('hidden');
     }
 
     function changeHeadline(content) {
         document.getElementById('loader').classList.remove('hidden');
         var a = 'write a headline in english for about 40 seconds for the content:' + content;
         eel.get_chat_response(a)(function (response) {
-            $('#txtHeadline').val(response.replace('"', ''));
-            document.getElementById('loader').classList.add('hidden');
+            $('#txtHeadline').val(response.replace('"', ''));            
         });
+        document.getElementById('loader').classList.add('hidden');
     }
 
     function changeYTTitle(content) {
         document.getElementById('loader').classList.remove('hidden');
-        var a = 'consider you are a youtuber. write a youtube title in about 100 characters in english for the content:' + content;
+        var a = 'consider you are a youtuber. write a shorts description in 3-4 words including 3-4 hashtags in english for the content:' + content;
         eel.get_chat_response(a)(function (response) {
             $('#txtYTTitle').val(response.replace('"', ''));
-            document.getElementById('loader').classList.add('hidden');
+            
         });
+        document.getElementById('loader').classList.add('hidden');
     }
 
     function changeYTDescription(content) {
         document.getElementById('loader').classList.remove('hidden');
         var a = 'translate to english for about 100 characters for the content:' + content;
         eel.get_chat_response(a)(function (response) {
-            $('#txtYTDescription').val(response.replace('"', ''));
-            document.getElementById('loader').classList.add('hidden');
+            $('#txtYTDescription').val(response.replace('"', ''));            
         });
+        document.getElementById('loader').classList.add('hidden');
     }
 
     function changeYTTags(content) {
         document.getElementById('loader').classList.remove('hidden');
         var a = 'consider you are a youtuber. write SEO youtube tags in english separated by comma for the content:' + content;
         eel.get_chat_response(a)(function (response) {
-            $('#txtYTTags').val(response.replace('"', ''));
-            document.getElementById('loader').classList.add('hidden');
+            $('#txtYTTags').val(response.replace('"', ''));            
         });
+        document.getElementById('loader').classList.add('hidden');
     }
     function changeInstaDescription(content) {
         document.getElementById('loader').classList.remove('hidden');
         var a = 'consider you are a Reel maker.write a instagram description including  trending hashtags for the content:' + content;
         eel.get_chat_response(a)(function (response) {
-            $('#txtInstaDescription').val(response.replace('"', ''));
-            document.getElementById('loader').classList.add('hidden');
+            $('#txtInstaDescription').val(response.replace('"', ''));            
         });
+        document.getElementById('loader').classList.add('hidden');
     }
 
     $('#saveDetails').click(function () {
@@ -330,8 +332,7 @@
         eel.play_text(text)();
     }
 
-    function saveDetails(){
-        document.getElementById('loader').classList.remove('hidden');
+    function saveDetails(){        
         const videoId = $('#video_id').val();
         const transcription = $('#txtTranscription').val();
         const headline = $('#txtHeadline').val();
@@ -361,7 +362,7 @@
         eel.save_video_details(videoDetails)(function (response) {
             if (response === 'success') {
                 clearfields();
-                document.getElementById('loader').classList.add('hidden');
+                
                 Swal.fire({
                     title: 'Success!',
                     text: 'Video Details Save successfully !!!',
@@ -371,7 +372,7 @@
                   });
                 
             } else {
-                document.getElementById('loader').classList.add('hidden');
+                
                 alert('Error saving video details. Please try again.');
             }
         });

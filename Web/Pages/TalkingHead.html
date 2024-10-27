@@ -160,39 +160,35 @@
     $('#progress-bar').css('width', progress + '%').text(progress + '%');
   }
 
-  eel.expose(refresh_video_library);
-function refresh_video_library() {
-  // Call the Python function using Eel
-  eel.refresh_video_library()(function (data) {
-    // Clear the current video library content
-    $('#video-library').empty();
-    $('#video-library').html('');
+  function refresh_video_library() {
+    eel.refresh_video_library()(function (data) {
+        // Clear the current video library content
+        $('#video-library').empty();
 
-    if (data.length === 0) {
-      // If no videos are present, display a message
-      $('#video-library').append('<p class="no-videos-message text-center w-100">No videos generated yet.</p>');
-    } else {
-      // Loop through each video path and create a video card in the library
-      data.forEach(function (videoPath) {
-        var a = videoPath.replace("Web/", "");
-        $('#video-library').append(`
-          <div class="col-md-4 video-card">
-            <video class="plyr__video-embed" controls>
-              <source src="${a}" type="video/mp4">
-              Your browser does not support the video tag.
-            </video>
-          </div>
-        `);
-      });
+        if (data.length === 0) {
+            // If no videos are present, display a message
+            $('#video-library').append('<p class="no-videos-message text-center w-100">No videos generated yet.</p>');
+        } else {
+            // Build HTML string for all video cards
+            let videoCardsHTML = '';
+            data.forEach(function (videoPath) {
+                var a = videoPath.replace("Web/", "");
+                videoCardsHTML += `
+                <div class="col-md-4 video-card text-center">
+                    <video class="video-player" controls style="width: 100%; height: auto;">
+                        <source src="${a}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <br>
+                    <a href="${a}" download class="btn btn-primary mt-2">Download</a>
+                </div>`;
+            });
 
-      // Initialize Plyr on all video elements
-      const players = Plyr.setup('.plyr__video-embed');
-    }
-  });
+            // Append all video cards at once
+            $('#video-library').append(videoCardsHTML);
+        }
+    });
 }
-
-
-
   function clearFields() {
     $('#txtContent').val('');
     $('#fuImage1').val('');
