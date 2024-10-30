@@ -162,3 +162,4 @@ SadTalker/start.sh
 
 # macOS files
 .DS_Store
+NEWSAI_DB.db

@@ -203,7 +203,7 @@ def generate_talking_head():
             if not os.path.exists(outputpath):    
                 os.makedirs(outputpath)            
             audio_path = os.path.join(driven_audio_folder, audio_file)   
-            random_number = generate_random_number(1, 13)        
+            random_number = generate_random_number(14, 67)        
             img = 'SadTalker/examples/source_image/'+ str(random_number) + '.png'             
             os.system(f"python SadTalker/inference.py --driven_audio {audio_path} \
                         --source_image {img} \
