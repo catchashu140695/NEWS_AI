@@ -18,6 +18,7 @@ from datetime import datetime
 import re
 from pydub import effects
 import cv2
+from PIL import Image
 
 
 # Configure logging
@@ -33,7 +34,7 @@ DB_PATH = "NEWSAI_DB.db"
 # Step 1: Start video processing by moving files from web folder to process folder
 def start_long_video_process(project_id):
     print(f'Process Start for Project Id: {project_id}')
-    
+    convert_and_replace_png("Web\\assets\\images\\vendor")
     # Move files from web folder to project root directory
     web_folder = os.path.join(Project_Path, project_id)
     base_folder = os.path.join("LongNewsProjects", project_id)
@@ -562,6 +563,38 @@ def sendEmail(projectId):
 
         # Close the database connection
         conn.close()  
+
+def convert_and_replace_png(folder_path, target_size=(1472, 832)):
+    # Ensure the folder exists
+    if not os.path.isdir(folder_path):
+        print(f"The specified folder '{folder_path}' does not exist.")
+        return
+    
+    # Get all JPG and PNG files in the folder
+    image_files = [f for f in os.listdir(folder_path) if f.lower().endswith((".jpg", ".png"))]
+    
+    if not image_files:
+        print("No JPG or PNG images found in the folder.")
+        return
+    
+    # Sort files to maintain a specific order (optional)
+    image_files.sort()
+    
+    # Convert each image to resized PNG, replacing original file
+    for image_file in image_files:
+        input_path = os.path.join(folder_path, image_file)
+        output_path = os.path.splitext(input_path)[0] + ".png"  # Replace original extension with .png
+        
+        # Open, resize, and convert image
+        with Image.open(input_path) as img:
+            resized_img = img.resize(target_size)
+            resized_img.save(output_path, "PNG")
+        
+        # Remove the original file if it was a .jpg
+        if image_file.lower().endswith(".jpg"):
+            os.remove(input_path)
+        
+        print(f"Replaced '{image_file}' with '{output_path}' in size {target_size}")
 
 if __name__ == "__main__":
     project_id = "7"
