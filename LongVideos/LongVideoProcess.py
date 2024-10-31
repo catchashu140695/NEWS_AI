@@ -18,7 +18,6 @@ from datetime import datetime
 import re
 from pydub import effects
 import cv2
-import ffmpeg as ffmpeg_lib
 
 
 # Configure logging
@@ -47,7 +46,7 @@ def start_long_video_process(project_id):
     for file in mp4_files:
         # Get the filename without the extension
         filename_without_ext = os.path.splitext(os.path.basename(file))[0]   
-        #save_news_audio(filename_without_ext,audios_folder)
+        save_news_audio(filename_without_ext,audios_folder)
    
     for file in mp4_files:
         # Get the filename without the extension
@@ -56,9 +55,8 @@ def start_long_video_process(project_id):
         audio_path=os.path.join(base_folder,"Audios",filename_without_ext + ".mp3")
         talking_head_output_path=os.path.join(talking_heads_folder,filename_without_ext)
         talking_head_image_path=os.path.join("Web","assets","images","vendor","Headlines.png")
-        #generate_talking_head(audio_path, talking_head_image_path, talking_head_output_path)
-        #util.rename_first_mp4(talking_head_output_path,filename_without_ext + ".mp4")         
-        scale_video_to_1920x1080(os.path.join(talking_head_output_path,filename_without_ext + ".mp4"),os.path.join(talking_head_output_path,filename_without_ext + ".mp4"))      
+        generate_talking_head(audio_path, talking_head_image_path, talking_head_output_path)
+        util.rename_first_mp4(talking_head_output_path,filename_without_ext + ".mp4")         
                 
         # Output path for the video with overlay news
         overlay_output_file_path = os.path.join(base_folder, "NewsOverlay", filename_without_ext)
@@ -172,7 +170,7 @@ def add_video_overlay(background_video_path, overlay_video_path, output_path):
         # Load and resize the overlay video
         overlay_video = (VideoFileClip(overlay_video_path)
                          .set_duration(video_duration)
-                         .resize(height=550)
+                         .resize(height=430)
                          .without_audio())
         
         # Loop the overlay video
@@ -221,7 +219,7 @@ def create_thumbnail(image_path, output_path):
     # Create the shadow text clip (slightly offset and darker color)
     shadow_clip = TextClip(
         main_text,
-        fontsize=500,  # Font size for the main text
+        fontsize=150,  # Font size for the main text
         font='Verdana-Bold',
         color='black',  # Shadow color
         align='West',
@@ -232,7 +230,7 @@ def create_thumbnail(image_path, output_path):
     # Create the main text clip with bolder white text
     main_text_clip = TextClip(
         main_text,
-        fontsize=500,  # Adjust the font size as needed
+        fontsize=150,  # Adjust the font size as needed
         font='Verdana-Bold',
         color='white',
         align='West',
@@ -243,7 +241,7 @@ def create_thumbnail(image_path, output_path):
     # Create the date text clip with a different color
     date_clip = TextClip(
         current_date,
-        fontsize=500,  # Same font size as the main text
+        fontsize=150,  # Same font size as the main text
         font='Verdana-Bold',
         color='yellow',  # Change to your preferred color for the date
         align='West',
@@ -565,33 +563,11 @@ def sendEmail(projectId):
         # Close the database connection
         conn.close()  
 
-
-def scale_video_to_1920x1080(video_path, output_path):
-    # Temporary output path to avoid in-place editing error
-    temp_output_path = output_path + "_temp.mp4"
-    
-    (
-        ffmpeg_lib
-        .input(video_path)
-        .filter('scale', 1920, 1080)
-        .output(temp_output_path, acodec="copy", vcodec="libx264")  # Keep audio codec and specify video codec
-        .overwrite_output()
-        .run()
-    )
-    
-    # Remove the original file and rename temp file to original output path
-    os.remove(output_path)
-    os.rename(temp_output_path, output_path)
-    
-    print(f"Video with audio has been scaled to 1920x1080 and saved at {output_path}")
-
-
 if __name__ == "__main__":
-    project_id = "8"
+    project_id = "7"
     start_long_video_process(project_id) 
     startVideoEditing(project_id)  
-    
-    #sendEmail(project_id)
+    sendEmail(project_id)
      
       
     
