@@ -43,7 +43,8 @@ def get_website_content(url):
 
 @eel.expose
 def fetch_news(topic="bollywood"):
-    newsapi = NewsApiClient(api_key="43cd03efd7434c8faddab5e95dbb60d8")    
+    #newsapi = NewsApiClient(api_key="43cd03efd7434c8faddab5e95dbb60d8")  
+    newsapi = NewsApiClient(api_key="c8fddb1c79de4ef0a8ea1ee28701be67")        
     categories = [topic] if isinstance(topic, str) else topic
     yesterday_date = datetime.now() - timedelta(days=1)
     yesterday_str = yesterday_date.strftime('%Y-%m-%d')
