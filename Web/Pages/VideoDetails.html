@@ -36,7 +36,8 @@
                         <div class="d-flex">
                             <button class="btn btn-primary w-100"
                                 onclick="playText($('#txtTranscription').val())">Play</button>&nbsp;
-
+                            <button class="btn btn-warning w-100"
+                                onclick="copyContent($('#txtTranscription').val())">Copy Content</button>
                         </div>
 
                     </div>
@@ -144,7 +145,13 @@
 
         
     });
-
+    function copyContent(news) {        
+        
+            var textToCopy = 'Write the youtube script in hinglish in single paragraph, keep the words simple as if some 12 year old is narrating ask a question at the begining to increase audience retention, keep the whole content and do not remove anything. Content:-' + news;
+           
+            copyToClipboard(textToCopy);
+        
+    }
     function getAllVideos(ProjectId) {
         document.getElementById('loader').classList.remove('hidden');
         $('#videoGallery').html('');
@@ -250,7 +257,7 @@
 
     function changeFullStory(content) {
         document.getElementById('loader').classList.remove('hidden');
-        var a = 'Write the summary in hindi adding sentences which will increase audience retention for the content:' + content;
+        var a = 'Write the script in hinglish in single paragraph, keep the words simple as if some 12 year old is narrating ask a question at the begining to increase audience retention, keep the whole content and do not remove anything. Content:-' + content;
         eel.get_chat_response(a)(function (response) {
             $('#txtFullStory').val(response.replace('"', ''));
             
@@ -331,7 +338,23 @@
         }
         eel.play_text(text)();
     }
-
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(function () {
+            Swal.fire({
+                title: 'Hurray',
+                text: 'Copied to clipboard !!!',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+            });
+        }, function () {
+            Swal.fire({
+                title: 'Oops',
+                text: 'Failed to Copy text !!!',
+                icon: 'error',
+                confirmButtonText: 'Ok'
+            });
+        });
+    }
     function saveDetails(){        
         const videoId = $('#video_id').val();
         const transcription = $('#txtTranscription').val();
