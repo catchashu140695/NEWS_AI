@@ -64,7 +64,7 @@
                             </div>
                         </div>
 
-                        <div id="newsCards" ></div>
+                        <div id="newsCards"></div>
                     </div>
                 </div>
             </div>
@@ -103,46 +103,44 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="AddModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-    aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+<div class="modal fade" id="AddModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
-            <div class="modal-header">                
-                <div class="row" style="width: 100%;">
-                    <div class="col-md-6">
-                        <h5 class="modal-title" id="exampleModalLongTitle">Add News Details</h5>
-                    </div>
-                    <div class="col-md-6 text-right">
-                        <button class="btn btn-sm btn-info" id="btnCopyTDT" onclick="AutoFill()">Generaate</button>
-                    </div>
-                </div>
+            <div class="modal-header">
+                <h5 class="modal-title" id="videoDetailsLabel">News Details</h5>
+                <button class="btn btn-info" id="btnGenerate" onclick="AutoFill()">Generate</button>
             </div>
-            <div class="modal-body">                
+            <div class="modal-body">
                 <div class="row">
                     <div class="col-md-4">
                         <span>Content</span>
                         <textarea class="form-control" id="txtContent" style="height: 150px;"></textarea>
-                        <button style="width: 100%;" class="btn btn-info btn-block" onclick="changeContent()">Refresh</button>
+                        <button style="width: 100%;" class="btn btn-info btn-block"
+                            onclick="changeContent()">Refresh</button>
                     </div>
                     <div class="col-md-4">
                         <span>Youtube Title</span>
                         <textarea class="form-control" id="txtYoutubeTitle" style="height: 150px;"></textarea>
-                        <button style="width: 100%;" class="btn btn-info btn-block" onclick="changeTitle()">Refresh</button>
+                        <button style="width: 100%;" class="btn btn-info btn-block"
+                            onclick="changeTitle()">Refresh</button>
                     </div>
                     <div class="col-md-4">
                         <span>Youtube Description</span>
                         <textarea class="form-control" id="txtYoutubeDescription" style="height: 150px;"></textarea>
-                        <button style="width: 100%;" class="btn btn-info btn-block" onclick="changeDescription()">Refresh</button>
+                        <button style="width: 100%;" class="btn btn-info btn-block"
+                            onclick="changeDescription()">Refresh</button>
                     </div>
                     <div class="col-md-4">
                         <span>Youtube Tags</span>
                         <textarea class="form-control" id="txtYoutubeTags" style="height: 150px;"></textarea>
-                        <button style="width: 100%;" class="btn btn-info btn-block" onclick="changeTags()">Refresh</button>
+                        <button style="width: 100%;" class="btn btn-info btn-block"
+                            onclick="changeTags()">Refresh</button>
                     </div>
                     <div class="col-md-4">
                         <span>Instagram Description</span>
                         <textarea class="form-control" id="txtInstagramDescription" style="height: 150px;"></textarea>
-                        <button style="width: 100%;" class="btn btn-info btn-block" onclick="changeInstaDescription()">Refresh</button>
+                        <button style="width: 100%;" class="btn btn-info btn-block"
+                            onclick="changeInstaDescription()">Refresh</button>
                     </div>
                 </div>
             </div>
@@ -158,8 +156,8 @@
 <input type="hidden" value="0" id="hdnURL" />
 <input type="hidden" value="0" id="hdnImageURL" />
 
-<script>   
-    function changeContent(){
+<script>
+    function changeContent() {
         document.getElementById('loader').classList.remove('hidden');
         const NewsTitle = $('#hdnTitle').val();
         const NewsDescription = $('#hdnDescription').val();
@@ -169,7 +167,7 @@
             document.getElementById('loader').classList.add('hidden');
         });
     }
-    function changeTitle(){
+    function changeTitle() {
         document.getElementById('loader').classList.remove('hidden');
         const NewsTitle = $('#hdnTitle').val();
         const NewsDescription = $('#hdnDescription').val();
@@ -179,7 +177,7 @@
             document.getElementById('loader').classList.add('hidden');
         });
     }
-    function changeDescription(){
+    function changeDescription() {
         document.getElementById('loader').classList.remove('hidden');
         const NewsTitle = $('#hdnTitle').val();
         const NewsDescription = $('#hdnDescription').val();
@@ -189,7 +187,7 @@
             document.getElementById('loader').classList.add('hidden');
         });
     }
-    function changeTags(){
+    function changeTags() {
         document.getElementById('loader').classList.remove('hidden');
         const NewsTitle = $('#hdnTitle').val();
         const NewsDescription = $('#hdnDescription').val();
@@ -199,7 +197,7 @@
             document.getElementById('loader').classList.add('hidden');
         });
     }
-    function changeInstaDescription(){
+    function changeInstaDescription() {
         document.getElementById('loader').classList.remove('hidden');
         const NewsTitle = $('#hdnTitle').val();
         const NewsDescription = $('#hdnDescription').val();
@@ -209,7 +207,7 @@
             document.getElementById('loader').classList.add('hidden');
         });
     }
-    function closeModal(){
+    function closeModal() {
         $(".modal").modal("hide");
     }
     function fetchNews(topic) {
@@ -338,34 +336,7 @@
         copyToClipboard(textToCopy);
     }
 
-    function AutoFill() {
-        document.getElementById('loader').classList.remove('hidden');
-        const NewsTitle = $('#hdnTitle').val();
-        const NewsDescription = $('#hdnDescription').val();
-        const NewsUrl = $('#hdnURL').val();
-        const content = "write summary in hindi for 30 seconds for news. Ask a question in the begining to attract audience. " + NewsTitle + NewsDescription;
-        const title = "write SEO shorts description in english in about 3-4 words and also include 3-4 hashtags for news " + NewsTitle + NewsDescription;
-        const description = "write SEO youtube description in english for news " + NewsTitle + NewsDescription;
-        const tags = "write SEO youtube tags separated by comma for news " + NewsTitle + NewsDescription;
-        const instagramDescription = "write SEO instagram description in english in 3-4 words along with 3-4 hash tags for news " + NewsTitle + NewsDescription;
-
-        eel.get_chat_response(content)(function (response) {
-            $('#txtContent').val(response.replace(/"/g, ''));
-        });
-        eel.get_chat_response(title)(function (response) {
-            $('#txtYoutubeTitle').val(response.replace(/"/g, ''));
-        });
-        eel.get_chat_response(description)(function (response) {
-            $('#txtYoutubeDescription').val(response.replace(/"/g, ''));
-        });
-        eel.get_chat_response(tags)(function (response) {
-            $('#txtYoutubeTags').val(response.replace(/"/g, ''));
-        });
-        eel.get_chat_response(instagramDescription)(function (response) {
-            $('#txtInstagramDescription').val(response.replace(/"/g, ''));
-        });
-        document.getElementById('loader').classList.add('hidden');
-    }
+    
 
     function add_news_to_db() {
         document.getElementById('loader').classList.remove('hidden');
@@ -424,5 +395,38 @@
             eel.startProcess();
         });
     });
+
+    function AutoFill() {
+        debugger;
+        $('#btnGenerate').text("Generating");
+        $('#btnGenerate').removeClass().addClass("btn btn-success");        
+        const NewsTitle = $('#hdnTitle').val();
+        const NewsDescription = $('#hdnDescription').val();
+        const NewsUrl = $('#hdnURL').val();
+        const content = "write summary in hindi for 30 seconds for news. Ask a question in the begining to attract audience. " + NewsTitle + NewsDescription;
+        const title = "write SEO shorts description in english in about 3-4 words and also include 3-4 hashtags for news " + NewsTitle + NewsDescription;
+        const description = "write SEO youtube description in english for news " + NewsTitle + NewsDescription;
+        const tags = "write SEO youtube tags separated by comma for news " + NewsTitle + NewsDescription;
+        const instagramDescription = "write SEO instagram description in english in 3-4 words along with 3-4 hash tags for news " + NewsTitle + NewsDescription;
+
+        eel.get_chat_response(content)(function (response) {
+            $('#txtContent').val(response.replace(/"/g, ''));
+        });
+        eel.get_chat_response(title)(function (response) {
+            $('#txtYoutubeTitle').val(response.replace(/"/g, ''));
+        });
+        eel.get_chat_response(description)(function (response) {
+            $('#txtYoutubeDescription').val(response.replace(/"/g, ''));
+        });
+        eel.get_chat_response(tags)(function (response) {
+            $('#txtYoutubeTags').val(response.replace(/"/g, ''));
+        });
+        eel.get_chat_response(instagramDescription)(function (response) {
+            $('#txtInstagramDescription').val(response.replace(/"/g, ''));
+        });
+        
+        $('#btnGenerate').text("Generate");
+        $('#btnGenerate').removeClass().addClass("btn btn-primary");
+    }
 
 </script>

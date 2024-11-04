@@ -205,7 +205,7 @@ def startVideoEditing(project_id):
     add_breaking_news_footer(os.path.join(base_folder, "Final.mp4"))
     create_thumbnail('Web\\assets\\images\\vendor\\Headlines.png',os.path.join(base_folder,"thumnbail.png"))
     
-    sendEmail(project_id)
+    #sendEmail(project_id)
     
     return "success"
 

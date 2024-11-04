@@ -13,6 +13,7 @@ from Utilities.db_Connection import *
 import shutil
 from pydub import AudioSegment
 import re
+import google.generativeai as genai
 
 
 
@@ -90,6 +91,14 @@ def transcribe_video(project_id, file_id, language='hi-IN'):
 
 @eel.expose()
 def get_chat_response(prompt):
+    genai.configure(api_key="AIzaSyCaYiuUiOkgv7I13tMEyB9-wjogmWW1APQ")
+    model = genai.GenerativeModel("gemini-1.5-flash")
+    response = model.generate_content(prompt)
+    print('Gemini Response' + response.text.replace('*',''))
+    return response.text.replace('*','').replace("##",'')
+
+@eel.expose()
+def get_chat_response1(prompt):
     # Define patterns to check in the response
     patterns_to_retry = [
         "I'm sorry, but I can't provide",

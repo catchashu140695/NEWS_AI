@@ -52,7 +52,7 @@
                                 onclick="changeFullStory($('#txtTranscription').val())">Refresh</button>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4" style="display: none;">
                         <label for="txtIntroduction">Introduction</label>
                         <textarea class="form-control mb-2" cols="5" id="txtIntroduction" placeholder="Introduction"
                             style="height: 135px" data-bs-toggle="tooltip"></textarea>
@@ -63,8 +63,7 @@
                                 onclick="changeIntroduction($('#txtTranscription').val())">Refresh</button>
                         </div>
                     </div>
-                </div>
-                <div class="row">
+                
                     <div class="col-md-4">
                         <label for="txtHeadline">Headline</label>
                         <textarea class="form-control mb-2" cols="5" style="height: 135px;" id="txtHeadline"
@@ -76,7 +75,7 @@
                                 onclick="changeHeadline($('#txtTranscription').val())">Refresh</button>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4" style="display: none;">
                         <label for="txtYTTitle">Youtube Title</label>
                         <textarea class="form-control mb-2" cols="5" style="height: 135px;" id="txtYTTitle"
                             placeholder="Youtube Title" data-bs-toggle="tooltip"></textarea>
@@ -87,7 +86,7 @@
                                 onclick="changeYTTitle($('#txtTranscription').val())">Refresh</button>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4" style="display: none;">
                         <label for="txtYTDescription">Youtube Description</label>
                         <textarea class="form-control mb-2" cols="5" style="height: 135px;" id="txtYTDescription"
                             placeholder="Youtube Description" data-bs-toggle="tooltip"></textarea>
@@ -98,7 +97,7 @@
                                 onclick="changeYTDescription($('#txtTranscription').val())">Refresh</button>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4" style="display: none;">
                         <label for="txtYTTags">Youtube Tags</label>
                         <textarea class="form-control mb-2" cols="5" style="height: 135px;" id="txtYTTags"
                             placeholder="Youtube Tags" data-bs-toggle="tooltip"></textarea>
@@ -109,7 +108,7 @@
                                 onclick="changeYTTags($('#txtTranscription').val())">Refresh</button>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4" style="display: none;">
                         <label for="txtInstaDescription">Instagram Description</label>
                         <textarea class="form-control mb-2" cols="5" style="height: 135px;" id="txtInstaDescription"
                             placeholder="Instagram Description" data-bs-toggle="tooltip"></textarea>
@@ -227,13 +226,8 @@
         $('#btnGenerate').removeClass().addClass("btn btn-success");
         eel.transcribe_video($('#hdnActiveProject').val(), $('#video_id').val())(function (response) {
             $('#txtTranscription').val(response);                  
-            changeFullStory(response);
-            changeIntroduction(response);
-            changeHeadline(response);
-            changeYTTitle(response);
-            changeYTDescription(response);
-            changeYTTags(response);
-            changeInstaDescription(response);   
+            changeFullStory(response);            
+            changeHeadline(response);            
             $('#btnGenerate').text("Generate");
             $('#btnGenerate').removeClass().addClass("btn btn-primary");             
         });

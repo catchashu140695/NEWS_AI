@@ -13,6 +13,7 @@ pip install pydub
 pip install newsapi-python
 pip install yt_dlp
 pip install bs4
+pip install -q -U google-generativeai
 
 
 
