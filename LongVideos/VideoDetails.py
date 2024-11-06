@@ -91,11 +91,15 @@ def transcribe_video(project_id, file_id, language='hi-IN'):
 
 @eel.expose()
 def get_chat_response(prompt):
-    genai.configure(api_key="AIzaSyCaYiuUiOkgv7I13tMEyB9-wjogmWW1APQ")
-    model = genai.GenerativeModel("gemini-1.5-flash")
-    response = model.generate_content(prompt)
-    print('Gemini Response' + response.text.replace('*',''))
-    return response.text.replace('*','').replace("##",'')
+    try:
+        genai.configure(api_key="AIzaSyCaYiuUiOkgv7I13tMEyB9-wjogmWW1APQ")
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        response = model.generate_content(prompt)
+        print('Gemini Response: ' + response.text.replace('*', ''))
+        return response.text.replace('*', '').replace("##", '')
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return get_chat_response1(prompt)
 
 @eel.expose()
 def get_chat_response1(prompt):
