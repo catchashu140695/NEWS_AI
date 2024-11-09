@@ -146,7 +146,7 @@
     });
     function copyContent(news) {        
         
-            var textToCopy = 'Write the youtube script in hinglish in single paragraph, keep the words simple as if some 12 year old is narrating ask a question at the begining to increase audience retention, keep the whole content and do not remove anything. Content:-' + news;
+            var textToCopy = 'Write the youtube script in hindi in single paragraph for about 150 words, keep the words simple as if some 12 year old is narrating ask a question at the begining to increase audience retention,try to keep the whole content and do not remove anything. Content:-' + news;
            
             copyToClipboard(textToCopy);
         
@@ -251,7 +251,7 @@
 
     function changeFullStory(content) {
         document.getElementById('loader').classList.remove('hidden');
-        var a = 'Write the script in hinglish in single paragraph, keep the words simple as if some 12 year old is narrating ask a question at the begining to increase audience retention, keep the whole content and do not remove anything. Content:-' + content;
+        var a = 'Write the youtube script in hindi in single paragraph for about 150 words, keep the words simple as if some 12 year old is narrating ask a question at the begining to increase audience retention,try to keep the whole content and do not remove anything. Content:-' + content;
         eel.get_chat_response(a)(function (response) {
             $('#txtFullStory').val(response.replace('"', ''));
             

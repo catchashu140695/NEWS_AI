@@ -381,6 +381,7 @@ def add_scrolling_text_to_video(video_path, output_path, text, font="Verdana", f
     video_width, video_height = video.size
 
     # Create the scrolling text clip
+    text = text.replace("\n", " ").replace("\r", " ")
     text_clip = TextClip(text, font=font, fontsize=fontsize, color=color)
     text_width, text_height = text_clip.size
 
@@ -597,7 +598,7 @@ def convert_and_replace_png(folder_path, target_size=(1472, 832)):
         print(f"Replaced '{image_file}' with '{output_path}' in size {target_size}")
 
 if __name__ == "__main__":
-    project_id = "8"
+    project_id = "9"
     #start_long_video_process(project_id) 
     startVideoEditing(project_id)  
     #sendEmail(project_id)
