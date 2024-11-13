@@ -103,7 +103,8 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="AddModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal fade" id="AddModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -115,8 +116,20 @@
                     <div class="col-md-4">
                         <span>Content</span>
                         <textarea class="form-control" id="txtContent" style="height: 150px;"></textarea>
-                        <button style="width: 100%;" class="btn btn-info btn-block"
-                            onclick="changeContent()">Refresh</button>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="btn-group" style="width:100%" role="group" aria-label="Basic example">
+                                    <button style="width:100%" class="btn btn-info btn-block"
+                                        onclick="changeContent()">Refresh</button>
+
+                                    <button style="width:100%" class="btn btn-warning btn-block"
+                                        onclick="copyContent()">Copy Prompt</button>
+                                </div>
+
+                            </div>
+                        </div>
+
+
                     </div>
                     <div class="col-md-4">
                         <span>Youtube Title</span>
@@ -324,7 +337,7 @@
     function copyContent() {
         const NewsUrl = $('#hdnURL').val();
         eel.get_website_content(NewsUrl)(function (response) {
-            const textToCopy = "write a summary in hindi for about 30 seconds for - :" + response;
+            const textToCopy = "write summary in hindi for 30 seconds for news. Ask a question in the begining to attract audience. - :" + response;
             copyToClipboard(textToCopy);
         });
     }
@@ -336,7 +349,7 @@
         copyToClipboard(textToCopy);
     }
 
-    
+
 
     function add_news_to_db() {
         document.getElementById('loader').classList.remove('hidden');
@@ -399,11 +412,11 @@
     function AutoFill() {
         debugger;
         $('#btnGenerate').text("Generating");
-        $('#btnGenerate').removeClass().addClass("btn btn-success");        
+        $('#btnGenerate').removeClass().addClass("btn btn-success");
         const NewsTitle = $('#hdnTitle').val();
         const NewsDescription = $('#hdnDescription').val();
         const NewsUrl = $('#hdnURL').val();
-        const content = "write summary in hindi for 30 seconds for news. Ask a question in the begining to attract audience. " + NewsTitle + NewsDescription;
+        const content = "write summary in hindi for 300 words maximum. Ask a question in the begining to attract audience. Content:- " + NewsTitle + NewsDescription;
         const title = "write SEO shorts description in english in about 3-4 words and also include 3-4 hashtags for news " + NewsTitle + NewsDescription;
         const description = "write SEO youtube description in english for news " + NewsTitle + NewsDescription;
         const tags = "write SEO youtube tags separated by comma for news " + NewsTitle + NewsDescription;
@@ -423,10 +436,11 @@
         });
         eel.get_chat_response(instagramDescription)(function (response) {
             $('#txtInstagramDescription').val(response.replace(/"/g, ''));
+            $('#btnGenerate').text("Generate");
+            $('#btnGenerate').removeClass().addClass("btn btn-primary");
         });
-        
-        $('#btnGenerate').text("Generate");
-        $('#btnGenerate').removeClass().addClass("btn btn-primary");
+
+       
     }
 
 </script>

@@ -91,15 +91,57 @@ def transcribe_video(project_id, file_id, language='hi-IN'):
 
 @eel.expose()
 def get_chat_response(prompt):
-    try:
-        genai.configure(api_key="AIzaSyCaYiuUiOkgv7I13tMEyB9-wjogmWW1APQ")
-        model = genai.GenerativeModel("gemini-1.5-flash")
-        response = model.generate_content(prompt)
-        print('Gemini Response: ' + response.text.replace('*', ''))
-        return response.text.replace('*', '').replace("##", '')
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        return get_chat_response1(prompt)
+    
+    patterns_to_retry = [
+        "I'm sorry, but I can't provide",
+        "How can I assist you ?",
+        "I am not able to assist with that request",
+        "I'm here to assist you with your inquiries",  # Pattern 1
+        "One message exceeds the 1000chars per message limit",  # Pattern 2
+        "One message exceeds the 1000 characters per message limit",  # Pattern 3
+        "I'm sorry, I cannot assist with that request. If you have any other questions or need help, feel free to ask!",  # Pattern 4
+        "I am here to help with inquiries, issues, and requests. If you have any questions or need assistance, feel free to ask!",
+        "Model not found or too long input. Or any other error"
+    ]  
+
+    def custom_similarity(pattern, response_text):
+        # Tokenize both strings into lowercase words
+        pattern_words = pattern.lower().split()
+        response_words = response_text.lower().split()
+        
+        # Calculate number of matching words
+        matching_words = len(set(pattern_words).intersection(response_words))
+        
+        # Calculate a similarity score as a percentage of matching words
+        similarity_score = matching_words / len(pattern_words) * 100
+        
+        return similarity_score
+
+    def should_retry(response_text):
+        # Check if response is blank or exceeds 1000 characters
+        if not response_text.strip() or len(response_text) > 1000:
+            return True
+        
+        # Check for custom similarity with a threshold of 70% match
+        similarity_threshold = 70
+        for pattern in patterns_to_retry:
+            similarity_score = custom_similarity(pattern, response_text)
+            if similarity_score >= similarity_threshold:
+                print(f"Pattern matched with similarity score: {similarity_score}%")
+                return True
+        
+        return False
+
+    while True:    
+        try:
+            genai.configure(api_key="AIzaSyCaYiuUiOkgv7I13tMEyB9-wjogmWW1APQ")
+            model = genai.GenerativeModel("gemini-1.5-flash")
+            response = model.generate_content(prompt)
+            print('Gemini Response: ' + response.text.replace('*', ''))
+            return response.text.replace('*', '').replace("##", '')
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return get_chat_response1(prompt)
 
 @eel.expose()
 def get_chat_response1(prompt):
@@ -112,7 +154,8 @@ def get_chat_response1(prompt):
         "One message exceeds the 1000chars per message limit",  # Pattern 2
         "One message exceeds the 1000 characters per message limit",  # Pattern 3
         "I'm sorry, I cannot assist with that request. If you have any other questions or need help, feel free to ask!",  # Pattern 4
-        "I am here to help with inquiries, issues, and requests. If you have any questions or need assistance, feel free to ask!"
+        "I am here to help with inquiries, issues, and requests. If you have any questions or need assistance, feel free to ask!",
+        "Model not found or too long input. Or any other error"
     ]  
 
     def custom_similarity(pattern, response_text):
