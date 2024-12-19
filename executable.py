@@ -8,10 +8,10 @@ folders_to_add = [
     "gfpgan",
     "LongVideos",
     "Utilities",
-    "SadTalker"
-]  # Add folder paths as needed
+    "SadTalker",
+    "NEWSAI_DB.db"
+]
 
-# Prepare the PyInstaller command without --onefile to test if it resolves the issue
 pyinstaller_command = [
     "pyinstaller",
     "--noconfirm",
