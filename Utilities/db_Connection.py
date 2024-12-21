@@ -77,6 +77,22 @@ def init_db():
         Status INTEGER
     );
     ''')
+    
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS EmailQueue (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Recipient TEXT NOT NULL,
+    Subject TEXT,
+    Body TEXT,
+    AttachmentURL TEXT,
+    Status TEXT DEFAULT 'Pending',
+    CreatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+    SentAt TEXT
+)
+);
+);
+    )
+""")
 
     conn.commit()
     conn.close()

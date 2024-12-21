@@ -14,6 +14,12 @@ pip install newsapi-python
 pip install yt_dlp
 pip install bs4
 pip install -q -U google-generativeai
+pip install pyodbc
+pip install smtplib
+pip install email
+pip install winsvc
+
+
 
 
 

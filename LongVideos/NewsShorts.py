@@ -21,7 +21,8 @@ from pydub import AudioSegment
 from pydub.silence import split_on_silence, detect_silence
 from bs4 import BeautifulSoup
 from g4f.client import Client
-
+import pyodbc
+import sqlite3
 
 @eel.expose("get_website_content")
 def get_website_content(url):
@@ -276,9 +277,22 @@ def ready_to_upload():
                     pswd = "weksdijljmpuuvpd"
 
                     # Send email
-                    send_emails(email_from, email_list, pswd, subject, message, attachment_path)                     
+                    # Add to insert into that table login here with the SQL Server connection string
+                    recipient = "bennyunsigned@gmail.com"
+
+                    # Insert into EmailQueue table logic for SQLite
+                    
+                    insert_query = """
+                        INSERT INTO EmailQueue (Recipient, Subject, Body, Status,AttachmentURL)
+                        VALUES (?, ?, ?, ?, ?)
+                    """
+
+                    # Execute the insert query
+                    cursor.execute(insert_query, (recipient, subject, message, 'Pending',attachment_path))
+                    conn.commit()  # Commit the transaction
+                    print("Email data inserted successfully into the EmailQueue table.")                  
                             
-                    shutil.rmtree("SadTalker/ready_to_upload/")            
+                               
                 else:
                     print("No records found for the given NewsId.")
 
@@ -288,7 +302,10 @@ def ready_to_upload():
     shutil.rmtree("SadTalker/examples/driven_audio/")
     createAudioFoler="SadTalker/examples/driven_audio/"    
     os.makedirs(createAudioFoler)
-            
+  
+     
+     
+    
 
 def send_emails(email_from, email_list, pswd, subject, content, attachmentPath):
     smtp_port = 587                 # Standard secure SMTP port
